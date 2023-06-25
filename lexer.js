@@ -2,12 +2,35 @@ function tokenize(string="") {
     const tk = []
     let cursor = 0
 
-    while (cursor < (string.length - 1)) {
-        const character = string[cursor].trim()
+    while (cursor < (string.length)) {
+        const character = string[cursor]?.trim()
         if (!character.trim()) { 
             cursor += 1
             continue
         }
+
+        if (character === ":" || character === ",") {
+            tk.push({
+                type: "Symbol",
+                value: character.trim(),
+                position : cursor
+            })
+            cursor += 1
+            continue
+        }
+        
+        if (character === "(" || character === ")") {
+            tk.push({
+                type: "Parenthesis",
+                value: character.trim(),
+                position : cursor,
+                isOpening: character === "("
+            })
+            cursor += 1
+            continue
+        }
+        
+        
         if (character === "'" || character === '"') {
             let character = string[cursor += 1]
             let content = ""
@@ -31,9 +54,11 @@ function tokenize(string="") {
 
             while (character && character.trim() && character.match(/[0-9.0-9]/) ) {
                 character = string[cursor]
-                if (character && character.match(/[0-9.0-9]/))
+                if (character.match(/[0-9.0-9]/))
                  {
                     content += character
+                 } else {
+                    break
                  }
                 cursor += 1
 
@@ -47,7 +72,7 @@ function tokenize(string="") {
 
              tk.push({
                 type: "Number",
-                value: content.trim(),
+                value: content,
                 position: cursor
              })
              continue
@@ -60,12 +85,13 @@ function tokenize(string="") {
 
             while (character && character.match(/[A-Za-z]/) && character.trim()) {
                 character = string[cursor]
-                if (character)
+                if (character.match(/[A-Za-z]/))
                  {
                     content += character
-                 }
+                 } else {
+                    break
+                 } 
                 cursor += 1
-
              }
     
             tk.push({
@@ -76,13 +102,7 @@ function tokenize(string="") {
             continue
         }    
 
-        if (character === ":") {
-            cursor += 1
-            continue
-        }
-        
-        
-        // throw`Undefined token ${character} at ${cursor}:${character.length}`
+        throw`Undefined token ${character} at ${cursor}:${character.length}`
     }
     return tk
 }
