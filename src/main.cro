@@ -1,0 +1,9 @@
+using("./crotanlib/stdout.cro")
+
+declare main {
+    print("Hello Crotan User!")
+    user-name = input("Whats your name? ")
+    print("Hello", user-name) 
+}
+main()
+exports(main)

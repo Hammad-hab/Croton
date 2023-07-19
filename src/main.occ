@@ -1,0 +1,85 @@
+{
+  "__CMP_CONTENT": [
+    {
+      "type": "VariableDeclaration",
+      "name": "name",
+      "assignee": {
+        "type": "StringLiteral",
+        "value": "stdout.cro"
+      }
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "print",
+      "assignee": {
+        "type": "Identifier",
+        "name": "jsprint"
+      }
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "input",
+      "assignee": {
+        "type": "Identifier",
+        "name": "jsinput"
+      }
+    },
+    {
+      "type": "Function",
+      "name": "main",
+      "arguments": [],
+      "__length": 2,
+      "__declarer": {
+        "content": {
+          "name": "main",
+          "contents": [
+            {
+              "type": "Function",
+              "name": "print",
+              "arguments": [
+                {
+                  "type": "StringLiteral",
+                  "value": "Hello Crotan User!"
+                }
+              ],
+              "__length": 3,
+              "__declarer": "undef"
+            },
+            {
+              "type": "VariableDeclaration",
+              "name": "user-name",
+              "assignee": {
+                "type": "Function",
+                "name": "input",
+                "arguments": [
+                  {
+                    "type": "StringLiteral",
+                    "value": "Whats your name? "
+                  }
+                ],
+                "__length": 3,
+                "__declarer": "undef"
+              }
+            },
+            {
+              "type": "Function",
+              "name": "print",
+              "arguments": [
+                {
+                  "type": "StringLiteral",
+                  "value": "Hello"
+                },
+                {
+                  "type": "Identifier",
+                  "name": "user-name"
+                }
+              ],
+              "__length": 5,
+              "__declarer": "undef"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
