@@ -165,21 +165,29 @@ class CrotanFunction {
   __execute(...args) {
     const variables = [];
     args.forEach((v, i) => {
-      variables.push(...parser(tokenize(`arg${i} = ${typeof v === "string" ? '"' : ''}${v}${typeof v === "string" ? '"' : ''}`)));
+      variables.push(
+        ...parser(
+          tokenize(
+            `arg${i} = ${typeof v === "string" ? '"' : ""}${v}${
+              typeof v === "string" ? '"' : ""
+            }`
+          )
+        )
+      );
     });
     let doesReturn = true;
     if (this.contents[this.contents.length - 1].name === "noreturn") {
       doesReturn = false;
-      this.contents =  this.contents.slice(0, this.contents.length - 1)
+      this.contents = this.contents.slice(0, this.contents.length - 1);
     }
     variables.push(...this.contents);
-   
+
     const d = evaluate(variables, true);
     const return_v = d[d.length];
     if (doesReturn) {
-      return return_v
+      return return_v;
     } else {
-      return "undef"
+      return "undef";
     }
     // if
   }
@@ -194,11 +202,32 @@ class CrotanFunction {
 function parser(tk_array) {
   let parsed = [];
   let index = 0;
-  let compiledFunctions = {}
+  let compiledFunctions = {};
   while (index < tk_array.length) {
     const token = tk_array[index];
     if (token.type === "Name" && token.value === "Begin") {
       index += 1;
+      continue;
+    }
+    if (
+      tk_array[index + 1] &&
+      tk_array[index + 1].type === "Symbol" &&
+      (tk_array[index + 1].value === ">" || tk_array[index + 1].value === "<" ||tk_array[index + 1].value === "~" )
+    ) {
+      // conditional
+      const comparitiveA = parser([token])[0];
+      let targets = tk_array.slice(index + 2, tk_array.length);
+      const parsedNextCondition = parser(targets)[0];
+
+      parsed.push({
+        type: "Conditional",
+        operation: tk_array[index + 1].value,
+        A: comparitiveA,
+        B: parsedNextCondition,
+      });
+
+      // console.log(tk_a`rray[index + 1]);
+      index += 4;
       continue;
     }
 
@@ -209,7 +238,7 @@ function parser(tk_array) {
       if (token.value === "declare") {
         const functionName = NTOKEN.value;
         const functionExecutable = new CrotanFunction(functionName);
-        compiledFunctions[functionName] = functionExecutable
+        compiledFunctions[functionName] = functionExecutable;
         let expStart = tk_array[index + 2];
         if (expStart.type === "Symbol" && expStart.value === "{") {
           const rArray = tk_array.slice(
@@ -268,19 +297,19 @@ function parser(tk_array) {
       if (NTOKEN && NTOKEN.type === "Parenthesis") {
         // Funtion call
         const expression = functionalParse(tk_array, token);
-        let declarer = "undef"
+        let declarer = "undef";
         if (expression.name in compiledFunctions) {
           //  compiledFunctions
           declarer = {
-            content : compiledFunctions[expression.name]
-          }
+            content: compiledFunctions[expression.name],
+          };
         }
         parsed.push({
           type: "Function",
           name: expression.name,
           arguments: expression.arguments,
           __length: expression.na,
-          "__declarer": declarer
+          __declarer: declarer,
         });
 
         index += expression.na;

@@ -1,9 +1,10 @@
 using("./crotanlib/stdout.cro")
 
-declare main {
-    print("Hello Crotan User!")
-    user-name = input("Whats your name? ")
-    print("Hello", user-name) 
+integer1 = 20
+integer2 = 20
+condition = integer1 ~ integer2 
+declare fn {
+    h = 120
+    h
 }
-main()
-exports(main)
+print(10)

@@ -1,6 +1,6 @@
 const { Exception } = require("./exceptionUtility");
-const { print,socketInitializer } = require("./nodeConnector")
-const rl = require("readline-sync")
+const { print, socketInitializer } = require("./nodeConnector");
+const rl = require("readline-sync");
 const explicitDefine = (env, name, value) => {
   env[name] = value;
 };
@@ -8,28 +8,29 @@ const explicitDefine = (env, name, value) => {
 const RawProgrammaticEnviornment = {
   pyprint: (...data) => {
     print.initiate((data) => {
-      console.log(data)
-    },...data)
+      console.log(data);
+    }, ...data);
   },
   jsprint: (...data) => {
     console.log(...data);
-  }, 
+  },
   jsinput: (prompt) => {
-    return rl.question(prompt) 
+    return rl.question(prompt);
   },
   add: (...nums) => {
-    // let value = 0 ? nums.every(v => !typeof v === 'string' || v instanceof String ) : "";
-    let value = 0
+    let value = 0;
     nums.forEach((v) => (value += v));
     return value;
+  },
+  concat: (s1,s2) => {
+    return s1 + s2
   },
   subtract: (v1, v2) => v2 - v1,
   div: (v1, v2) => v1 / v2,
   prod: (v1, v2) => v1 * v2,
   explicitDefine,
-  "False": false,
-  "True": true,
-
+  False: false,
+  True: true,
 };
 
 const cloneEnvObject = (env) => {
@@ -54,13 +55,13 @@ const createEnviornmentUsingProgram = (Program) => {
     };
     clone.explicitDefine(clone, "explicitDefine", explicitDefine);
     clone.explicitDefine("app", {
-      "name": Program.name,
-      "id": "#"+(Math.random().toString().replace(".", ""))
+      name: Program.name,
+      id: "#" + Math.random().toString().replace(".", ""),
     });
 
-    clone.explicitDefine("explicitRead", (variableName) => { 
-        return clone[variableName]
-    }) 
+    clone.explicitDefine("explicitRead", (variableName) => {
+      return clone[variableName];
+    });
     return clone;
   } else {
     new Exception(
@@ -80,5 +81,5 @@ let Enviornment = createEnviornmentUsingProgram({ name: "GlobalPragma" });
 
 module.exports = {
   createEnviornmentUsingProgram,
-  Enviornment
+  Enviornment,
 };

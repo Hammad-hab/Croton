@@ -2,6 +2,28 @@ const { Exception } = require("./exceptionUtility");
 const { Enviornment } = require("./std");
 const callStack = [];
 
+function evaluateCondition(parsedCondition) {
+  const operation = parsedCondition.operation;
+  if (parsedCondition.A.type && parsedCondition.A.type === "Conditional") {
+    parsedCondition.A = evaluateCondition(parsedCondition.A);
+  }
+  if (parsedCondition.B.type && parsedCondition.B.type === "Conditional") {
+    parsedCondition.B = evaluateCondition(parsedCondition.B);
+  }
+  if (operation === ">") {
+    return rEval(parsedCondition.A) > rEval(parsedCondition.B);
+  }
+
+  if (operation === "<") {
+
+    return rEval(parsedCondition.A) < rEval(parsedCondition.B);
+
+  }
+  if (operation === "~") {
+    return rEval(parsedCondition.A) === rEval(parsedCondition.B);
+  }
+}
+
 const functionalEvaluation = (node) => {
   if (!Enviornment[node.name]) {
     return new Exception(
@@ -14,7 +36,7 @@ const functionalEvaluation = (node) => {
   return fn(...args);
 };
 const identifierEvaluation = (node) => {
-  if (!Enviornment[node.name]) {
+  if (!Enviornment[node.name] && Enviornment[node.name] != false) {
     return new Exception(0, `Undefined Identifier ${node.name}`).throw();
   }
   return Enviornment[node.name];
@@ -37,6 +59,7 @@ const rEval = (token) => {
   if (token.type === "ObjectAccessor") return objectAccessorEvaluation(token);
   if (token.type === "VariableDeclaration")
     return Enviornment.explicitDefine(token.name, rEval(token.assignee));
+  if (token.type === "Conditional") return evaluateCondition(token)
   if (token.value) return token.value;
 };
 const evaluate = (tokens, ret=false) => {

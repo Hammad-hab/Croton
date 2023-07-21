@@ -29,7 +29,10 @@ function tokenize(string = "") {
       character === "|" ||
       character === "=" ||
       character === "{" ||
-      character === "}"
+      character === "}" ||
+      character === ">" ||
+      character === "<" ||
+      character === "~"
     ) {
       tk.push({
         type: "Symbol",

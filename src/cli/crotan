@@ -11,7 +11,7 @@ const { Exception } = require("./exceptionUtility");
 
 if (argv.length > 2) {
   fs.readFile(argv[2], "utf-8", (err, buffer) => {
-    if (argv[2].endsWith(".cmp")) {
+    if (argv[2].endsWith(".crotan")) {
       const Evaluate = evaluate(JSON.parse(buffer));
     }
     else {
