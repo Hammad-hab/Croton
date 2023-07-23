@@ -84,31 +84,6 @@ function functionalParse(array, name) {
   };
 }
 
-// function programaticParse(array, name) {
-//   const rArray = array.slice(array.indexOf(name) + 1, array.length - 1);
-//   let index = 0;
-//   const Name = rArray[0];
-//   let body = [];
-//   rArray.shift(); // remove the name to prevent it from becoming one of the tokens
-//   while (index < rArray.length) {
-//     const tk = rArray[index];
-//     if (tk.value === "End" && tk.type === "Name") break;
-//     if (tk.value === ":" && tk.type === "Symbol") {
-//       index += 1;
-//       continue;
-//     }
-
-//     body.push(tk);
-//     index += 1;
-//   }
-//   body = parser(body);
-//   return {
-//     length: body.length,
-//     name: Name.value,
-//     body: body,
-//   };
-// }
-
 function properticalPrase(array, token) {
   let rArray = array.slice(array.indexOf(token) - 1, array.length);
   // console.log("fr", rArray);
@@ -154,8 +129,10 @@ function properticalPrase(array, token) {
 }
 
 class CrotanFunction {
-  constructor(name) {
+  constructor(name, type) {
     this.name = name;
+    this.type = type;
+
     this.contents = null;
   }
 
@@ -175,21 +152,20 @@ class CrotanFunction {
         )
       );
     });
-    let doesReturn = true;
-    if (this.contents[this.contents.length - 1].name === "noreturn") {
-      doesReturn = false;
-      this.contents = this.contents.slice(0, this.contents.length - 1);
-    }
     variables.push(...this.contents);
+    let doesReturn = true;
+    if (this.type === "NO_RETURN") {
+      doesReturn = false
+    }
 
     const d = evaluate(variables, true);
-    const return_v = d[d.length];
+
+    const return_v = d[d.length -1];
     if (doesReturn) {
       return return_v;
     } else {
       return "undef";
     }
-    // if
   }
   declare() {
     const crFunction = this;
@@ -212,7 +188,9 @@ function parser(tk_array) {
     if (
       tk_array[index + 1] &&
       tk_array[index + 1].type === "Symbol" &&
-      (tk_array[index + 1].value === ">" || tk_array[index + 1].value === "<" ||tk_array[index + 1].value === "~" )
+      (tk_array[index + 1].value === ">" ||
+        tk_array[index + 1].value === "<" ||
+        tk_array[index + 1].value === "~" || tk_array[index + 1].value === ":" )
     ) {
       // conditional
       const comparitiveA = parser([token])[0];
@@ -226,7 +204,6 @@ function parser(tk_array) {
         B: parsedNextCondition,
       });
 
-      // console.log(tk_a`rray[index + 1]);
       index += 4;
       continue;
     }
@@ -236,10 +213,14 @@ function parser(tk_array) {
       token.parsed = true;
 
       if (token.value === "declare") {
-        const functionName = NTOKEN.value;
-        const functionExecutable = new CrotanFunction(functionName);
+        const functionType = NTOKEN.value;
+        const functionName = tk_array[index + 2].value;
+        const functionExecutable = new CrotanFunction(
+          functionName,
+          functionType
+        );
         compiledFunctions[functionName] = functionExecutable;
-        let expStart = tk_array[index + 2];
+        let expStart = tk_array[index + 3];
         if (expStart.type === "Symbol" && expStart.value === "{") {
           const rArray = tk_array.slice(
             tk_array.indexOf(NTOKEN) + 1,
@@ -260,7 +241,7 @@ function parser(tk_array) {
         } else {
           new Exception(
             NTOKEN.position,
-            `Unexpected token ${NTOKEN.value} at ${NTOKEN.position}`
+            `Unexpected token ${NTOKEN.value} at ${NTOKEN.position}. Broken attempt to declare function`
           ).throw();
         }
       }
@@ -280,16 +261,12 @@ function parser(tk_array) {
         const name = token.value;
         let targets = tk_array.slice(index + 2, tk_array.length);
         const assignee = parser(targets);
-        // console.log(targets);
-
         parsed.push({
           type: "VariableDeclaration",
           name,
           assignee: assignee[0],
         });
-        // index += 2
         if (assignee[0].type === "Function") index += assignee[0].__length;
-        // if (assignee[0].type === "ObjectAccessor") index += assignee[0].lp;
         index += 3;
         continue;
       }
@@ -345,7 +322,6 @@ function parser(tk_array) {
 
     index += 1;
   }
-  // console.log(parsed)
   copiedParsed = [];
   parsed.forEach((v) => {
     if ((v.type === "Function" && v.name === "using") || v.name === "exports") {

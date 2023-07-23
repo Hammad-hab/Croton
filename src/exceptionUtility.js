@@ -3,7 +3,7 @@ class Exception {
   static PREV_M = false;
 
   constructor(at, message) {
-    this.message = `Error at ${at}.\n${message}`;
+    this.message = `Error at ${at}:\n${message}`;
   }
 
   throw() {

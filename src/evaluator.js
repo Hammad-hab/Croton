@@ -15,12 +15,20 @@ function evaluateCondition(parsedCondition) {
   }
 
   if (operation === "<") {
-
     return rEval(parsedCondition.A) < rEval(parsedCondition.B);
-
   }
   if (operation === "~") {
     return rEval(parsedCondition.A) === rEval(parsedCondition.B);
+  }
+  if (operation === ":") {
+    const d1 = rEval(parsedCondition.A);
+    const d2 = rEval(parsedCondition.B);
+    if (typeof d1 === "string" && typeof d2 === "string") {
+      return d2.includes(d1)
+    }
+    else {
+      return new Exception(0, `The in operator ":" expects both operands to be of type STRING.`)
+    }
   }
 }
 
@@ -32,12 +40,14 @@ const functionalEvaluation = (node) => {
     ).throw();
   }
   const fn = Enviornment[node.name];
-  const args = node.arguments.map(rEval)
+  const args = node.arguments.map(rEval);
   return fn(...args);
 };
 const identifierEvaluation = (node) => {
-  if (!Enviornment[node.name] && Enviornment[node.name] != false) {
-    return new Exception(0, `Undefined Identifier ${node.name}`).throw();
+  if (typeof Enviornment[node.name] != "number") {
+    if (!Enviornment[node.name] && Enviornment[node.name] != false) {
+      return new Exception(0, `Undefined Identifier ${node.name}`).throw();
+    }
   }
   return Enviornment[node.name];
 };
@@ -50,7 +60,7 @@ const objectAccessorEvaluation = (token) => {
     value = value[name];
   }
 
-  return value? value : value;
+  return value ? value : value;
 };
 
 const rEval = (token) => {
@@ -59,20 +69,19 @@ const rEval = (token) => {
   if (token.type === "ObjectAccessor") return objectAccessorEvaluation(token);
   if (token.type === "VariableDeclaration")
     return Enviornment.explicitDefine(token.name, rEval(token.assignee));
-  if (token.type === "Conditional") return evaluateCondition(token)
+  if (token.type === "Conditional") return evaluateCondition(token);
   if (token.value) return token.value;
 };
-const evaluate = (tokens, ret=false) => {
+const evaluate = (tokens, ret = false) => {
   // console.log(tokens)
-  const data = []
+  const data = [];
   for (const token of tokens) {
-      data.push(rEval(token));
+    data.push(rEval(token));
   }
-  if (ret) return data
+  if (ret) return data;
 };
 
 const evaluateREPL = (tokens) => {
-  
   const output = [];
   for (const token of tokens) {
     const o = rEval(token);

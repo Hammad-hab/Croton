@@ -1,3 +1,5 @@
+const { Exception } = require("./exceptionUtility");
+
 function tokenize(string = "") {
   const tk = [];
   string = string += "\n";
@@ -5,20 +7,24 @@ function tokenize(string = "") {
 
   while (cursor < string.length) {
     const character = string[cursor];
-    // console.log(character)
-
     if (!character.trim()) {
       cursor += 1;
       continue;
     }
 
     if (character === "@") {
+      let inde = cursor
       let character = string[(cursor += 1)];
       let content = "";
       while (character != "@") {
+        if (cursor >= 1000) 
+        {
+          return new Exception(inde,`Comment is either too long or unterminated`).throw()
+        }
         character = string[cursor];
         content += character;
         cursor += 1;
+        
       }
       continue;
     }
@@ -130,7 +136,7 @@ function tokenize(string = "") {
       continue;
     }
 
-    throw `Undefined token ${character} at ${cursor}:${character.length}`;
+    return new Exception(0,`Undefined token ${character} at ${cursor}:${character.length}`).throw()
   }
   return tk;
 }

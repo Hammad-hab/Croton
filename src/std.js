@@ -12,7 +12,7 @@ const RawProgrammaticEnviornment = {
     }, ...data);
   },
   jsprint: (...data) => {
-    console.log(...data);
+    console.log(data.join(""));
   },
   jsinput: (prompt) => {
     return rl.question(prompt);
@@ -28,9 +28,22 @@ const RawProgrammaticEnviornment = {
   subtract: (v1, v2) => v2 - v1,
   div: (v1, v2) => v1 / v2,
   prod: (v1, v2) => v1 * v2,
+  floor: Math.floor,
+  rand: Math.random,
+  sin: Math.sin,
+  cos: Math.cos,
+  tan: Math.tan,
+  abs: Math.abs,
+  INF: Infinity,
+  
   explicitDefine,
-  False: false,
-  True: true,
+  "false": false,
+  "true": true,
+  loopFN: (fn, times) => {
+    for (let i = 0; i < times ; i++) {
+      fn(i + 1)
+    }
+  }
 };
 
 const cloneEnvObject = (env) => {
