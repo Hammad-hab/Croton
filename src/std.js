@@ -1,20 +1,14 @@
 const { Exception } = require("./exceptionUtility");
-const { print, socketInitializer } = require("./nodeConnector");
 const rl = require("readline-sync");
 const explicitDefine = (env, name, value) => {
   env[name] = value;
 };
 
 const RawProgrammaticEnviornment = {
-  pyprint: (...data) => {
-    print.initiate((data) => {
-      console.log(data);
-    }, ...data);
-  },
-  jsprint: (...data) => {
+  output: (...data) => {
     console.log(data.join(""));
   },
-  jsinput: (prompt) => {
+  input: (prompt) => {
     return rl.question(prompt);
   },
   add: (...nums) => {
@@ -34,6 +28,8 @@ const RawProgrammaticEnviornment = {
   cos: Math.cos,
   tan: Math.tan,
   abs: Math.abs,
+  PI: Math.PI,
+  E: Math.E,
   INF: Infinity,
   
   explicitDefine,
@@ -56,7 +52,7 @@ const cloneEnvObject = (env) => {
 
 const createEnviornmentUsingProgram = (Program) => {
   if (Program) {
-    const clone = cloneEnvObject(RawProgrammaticEnviornment);
+    let clone = cloneEnvObject(RawProgrammaticEnviornment);
     const explicitDefine = (name, value) => {
       if (name.includes(" "))
         return new Exception(
@@ -71,6 +67,10 @@ const createEnviornmentUsingProgram = (Program) => {
       name: Program.name,
       id: "#" + Math.random().toString().replace(".", ""),
     });
+    clone.extension= (file) => {
+      const imported = require(file)
+      clone = Object.assign(clone, imported)
+   }
 
     clone.explicitDefine("explicitRead", (variableName) => {
       return clone[variableName];

@@ -1,8 +1,0 @@
-using("./crotanlib/stdout.cro")
-
-@
-declare NO_RETURN fn {
-    print("Hello-", arg0, "#", rand())
-}
-
-loopFN(fn, INF)

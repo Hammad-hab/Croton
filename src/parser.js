@@ -4,12 +4,9 @@ const { evaluate } = require("./evaluator");
 const fs = require("fs");
 const { tokenize } = require("./lexer");
 function using(module) {
-  // console.log(module);
   const data = fs.readFileSync(module, { encoding: "utf-8" });
   const tk = tokenize(data);
   let pr = parser(tk);
-  // console.log(pr);
-
   const targets = [];
   const targetAlias = [];
   pr.forEach((v) => {
@@ -28,8 +25,6 @@ function using(module) {
       );
     }
   });
-
-  // console.log(targetAlias)
   pr.forEach((v) => {
     if (targetAlias.includes(v.name)) {
       targets.push(v);
@@ -37,6 +32,8 @@ function using(module) {
   });
   return targets;
 }
+
+
 
 function functionalParse(array, name) {
   const rArray = array.slice(array.indexOf(name) + 1, array.length);

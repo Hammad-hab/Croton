@@ -1,4 +1,0 @@
-name = "stdout.cro"
-print = jsprint
-input = jsinput
-exports(print, input)
