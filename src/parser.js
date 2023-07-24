@@ -1,6 +1,6 @@
 const { Exception } = require("./exceptionUtility");
 const { Enviornment } = require("./std");
-const { evaluate } = require("./evaluator");
+const { evaluate, rEval } = require("./evaluator");
 const fs = require("fs");
 const { tokenize } = require("./lexer");
 function using(module) {
@@ -137,7 +137,8 @@ class CrotanFunction {
     this.contents = parser(contents);
   }
   __execute(...args) {
-    const variables = [];
+    let variables = [];
+
     args.forEach((v, i) => {
       variables.push(
         ...parser(
@@ -150,16 +151,21 @@ class CrotanFunction {
       );
     });
     variables.push(...this.contents);
+    // variables = variables.slice(0, variables.length - 1)
     let doesReturn = true;
-    if (this.type === "NO_RETURN") {
+    let hasScope = true
+    if (this.type === "VOID_FN") {
       doesReturn = false
+      hasScope = false
     }
+    if (this.type === "RETN_FN") {
+      doesReturn = true
+      hasScope = false
+    }
+    const d = evaluate(variables, false, true);
 
-    const d = evaluate(variables, true);
-
-    const return_v = d[d.length -1];
     if (doesReturn) {
-      return return_v;
+      return d;
     } else {
       return "undef";
     }

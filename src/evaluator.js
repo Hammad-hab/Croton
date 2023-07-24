@@ -72,10 +72,14 @@ const rEval = (token) => {
   if (token.type === "Conditional") return evaluateCondition(token);
   if (token.value) return token.value;
 };
-const evaluate = (tokens, ret = false) => {
+const evaluate = (tokens, ret=false, evfn=false) => {
   // console.log(tokens)
   const data = [];
   for (const token of tokens) {
+    if (evfn && (token.type === "Identifier" && token.name === "return")) {
+        const Ntoken = rEval(tokens[tokens.indexOf(token) + 1])
+        return Ntoken
+    }
     data.push(rEval(token));
   }
   if (ret) return data;

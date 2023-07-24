@@ -25,7 +25,7 @@ if (argv.length > 2) {
   Enviornment.explicitDefine("exit", () => {exit(0)})
   const rl = readline.createInterface({ input: stdin, output: stdout });
   function doREPLStuff() {
-    rl.question("SupScript % ").then((v) => {
+    rl.question("Crotan % ").then((v) => {
       const Tokens = tokenize(v);
       const Parse = parser(Tokens);
       const Evaluate = evaluateREPL(Parse);
