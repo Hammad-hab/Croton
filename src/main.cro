@@ -1,4 +1,1 @@
-declare RETN_FN function {
-    loopFN(output, 10)
-}
-function()
+using("./crotanlib/inversetrig.cro")

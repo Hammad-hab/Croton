@@ -1,6 +1,6 @@
 const { Exception } = require("./exceptionUtility");
 const { Enviornment } = require("./std");
-const { evaluate, rEval } = require("./evaluator");
+const { evaluate } = require("./evaluator");
 const fs = require("fs");
 const { tokenize } = require("./lexer");
 function using(module) {
@@ -125,7 +125,7 @@ function properticalPrase(array, token) {
   };
 }
 
-class CrotanFunction {
+class CrotonFunction {
   constructor(name, type) {
     this.name = name;
     this.type = type;
@@ -175,6 +175,7 @@ class CrotanFunction {
     Enviornment.explicitDefine(this.name, function (...args) {
       return crFunction.__execute(...args);
     });
+    crFunction.envInstance = Enviornment[this.name]
   }
 }
 
@@ -218,7 +219,7 @@ function parser(tk_array) {
       if (token.value === "declare") {
         const functionType = NTOKEN.value;
         const functionName = tk_array[index + 2].value;
-        const functionExecutable = new CrotanFunction(
+        const functionExecutable = new CrotonFunction(
           functionName,
           functionType
         );

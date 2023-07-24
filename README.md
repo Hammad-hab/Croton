@@ -1,16 +1,16 @@
-# Crotan, a language of futuristic syntax.
+# Croton, a language of futuristic syntax.
 
-Welcome to crotan, a language that features a new and furturistic syntax that rejects the concepts and values of traditional C.
+Welcome to croton, a language that features a new and furturistic syntax that rejects the concepts and values of traditional C.
 
-## About Crotan
+## About Croton
 
-Crotan is a dynamically typed, interpreted hybrid programming language that combines the elite concepts of Functional Programming and Object Oriented Programming. Objects, instead of being  mutable entites are immutable constant datatypes that are interacted with using functions. Crotan is written in JavaScript which allows it to directly interact with JS code and the browser by the means of extentions made using JS. That being said, Crotan is more of a Domain Specific Language rather than a traditional Interperted one.
+Croton is a dynamically typed, interpreted hybrid programming language that combines the elite concepts of Functional Programming and Object Oriented Programming. Objects, instead of being mutable entites are immutable constant datatypes that are interacted with using functions. Croton is written in JavaScript which allows it to directly interact with JS code and the browser by the means of extentions made using JS. The point of Croton
 
-## Features of Crotan
+## Features of Croton
 
 #### Unique Syntax
 
-While it is true that crotan is a curly-bracket language like C, Crotan tends to recreate various syntactic things that C didn't have.
+While it is true that croton is a curly-bracket language like C, croton tends to recreate various syntactic things that C didn't have.
 
 ## Example Programs
 
@@ -18,7 +18,7 @@ While it is true that crotan is a curly-bracket language like C, Crotan tends to
 
 ```cpp
 @ Hello World Program! @
-using("./crotanlib/stdout.cro")
+using("./crotonlib/stdout.cro")
 print("Hello World!")
 ```
 
@@ -27,7 +27,7 @@ print("Hello World!")
 ```cpp
 @ Name printer @
 
-using("./crotanlib/stdout.cro")
+using("./crotonlib/stdout.cro")
 user-name = input("Hi, What's your name? ")
 print("Hello", user-name)
 ```
@@ -36,7 +36,7 @@ print("Hello", user-name)
 
 ```cpp
 @ Advance name printer that uses functions! @
-using("./crotanlib/stdout.cro")
+using("./crotonlib/stdout.cro")
 declare sayHelloTo {
 	print("Hello", arg0)
 }
@@ -51,7 +51,7 @@ sayHelloTo(name)
 	Welcome to this program. In this program we compare 2 numbers
 	that are entered by the user
 @
-using("./crotanlib/stdout.cro")
+using("./crotonlib/stdout.cro")
 declare compareNumbers {
 	n1 = arg0
 	n2 = arg1

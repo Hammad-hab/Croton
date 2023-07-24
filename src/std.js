@@ -5,7 +5,7 @@ const explicitDefine = (env, name, value) => {
 };
 
 const RawProgrammaticEnviornment = {
-  output: (...data) => {
+  print: (...data) => {
     console.log(data.join(""));
   },
   input: (prompt) => {
@@ -61,6 +61,7 @@ const createEnviornmentUsingProgram = (Program) => {
         ).throw();
 
       clone[name] = value;
+      return clone[name]
     };
     clone.explicitDefine(clone, "explicitDefine", explicitDefine);
     clone.explicitDefine("app", {

@@ -67,8 +67,7 @@ const rEval = (token) => {
   if (token.type === "Function") return functionalEvaluation(token);
   if (token.type === "Identifier") return identifierEvaluation(token);
   if (token.type === "ObjectAccessor") return objectAccessorEvaluation(token);
-  if (token.type === "VariableDeclaration")
-    return Enviornment.explicitDefine(token.name, rEval(token.assignee));
+  if (token.type === "VariableDeclaration") return Enviornment.explicitDefine(token.name, rEval(token.assignee));
   if (token.type === "Conditional") return evaluateCondition(token);
   if (token.value) return token.value;
 };
