@@ -68,6 +68,13 @@ const rEval = (token) => {
   if (token.type === "Identifier") return identifierEvaluation(token);
   if (token.type === "ObjectAccessor") return objectAccessorEvaluation(token);
   if (token.type === "VariableDeclaration") return Enviornment.explicitDefine(token.name, rEval(token.assignee));
+  if (token.type === "ConditionalEvaluation") {
+    // console.log(token.condition);
+    const condition = rEval(token.condition)
+    if (condition) {
+      return rEval(token.then[0])
+    }
+  } 
   if (token.type === "Conditional") return evaluateCondition(token);
   if (token.value) return token.value;
 };
@@ -76,6 +83,7 @@ const evaluate = (tokens, ret=false, evfn=false) => {
   const data = [];
   for (const token of tokens) {
     if (evfn && (token.type === "Identifier" && token.name === "return")) {
+      
         const Ntoken = rEval(tokens[tokens.indexOf(token) + 1])
         return Ntoken
     }

@@ -33,8 +33,6 @@ function using(module) {
   return targets;
 }
 
-
-
 function functionalParse(array, name) {
   const rArray = array.slice(array.indexOf(name) + 1, array.length);
   let index = 0;
@@ -78,6 +76,7 @@ function functionalParse(array, name) {
     name: name.value,
     arguments: Array.isArray(arguments) ? arguments : [arguments],
     na: fVal + 1,
+    len: args.length
   };
 }
 
@@ -153,14 +152,14 @@ class CrotonFunction {
     variables.push(...this.contents);
     // variables = variables.slice(0, variables.length - 1)
     let doesReturn = true;
-    let hasScope = true
+    let hasScope = true;
     if (this.type === "VOID_FN") {
-      doesReturn = false
-      hasScope = false
+      doesReturn = false;
+      hasScope = false;
     }
     if (this.type === "RETN_FN") {
-      doesReturn = true
-      hasScope = false
+      doesReturn = true;
+      hasScope = false;
     }
     const d = evaluate(variables, false, true);
 
@@ -175,7 +174,7 @@ class CrotonFunction {
     Enviornment.explicitDefine(this.name, function (...args) {
       return crFunction.__execute(...args);
     });
-    crFunction.envInstance = Enviornment[this.name]
+    crFunction.envInstance = Enviornment[this.name];
   }
 }
 
@@ -194,7 +193,9 @@ function parser(tk_array) {
       tk_array[index + 1].type === "Symbol" &&
       (tk_array[index + 1].value === ">" ||
         tk_array[index + 1].value === "<" ||
-        tk_array[index + 1].value === "~" || tk_array[index + 1].value === ":" )
+        tk_array[index + 1].value === "~" ||
+        tk_array[index + 1].value === ":" ||
+        tk_array[index + 1].value === "&")
     ) {
       // conditional
       const comparitiveA = parser([token])[0];
@@ -278,22 +279,52 @@ function parser(tk_array) {
       if (NTOKEN && NTOKEN.type === "Parenthesis") {
         // Funtion call
         const expression = functionalParse(tk_array, token);
-        let declarer = "undef";
-        if (expression.name in compiledFunctions) {
-          //  compiledFunctions
-          declarer = {
-            content: compiledFunctions[expression.name],
-          };
-        }
-        parsed.push({
-          type: "Function",
-          name: expression.name,
-          arguments: expression.arguments,
-          __length: expression.na,
-          __declarer: declarer,
-        });
+        if (expression.name === "if") {
+        // console.log(expression.len);
+           const NNTOKEN = tk_array[index + expression.len + 3]
+          //  console.log(NNTOKEN)
+           if (NNTOKEN.value === "{" && NNTOKEN.type === "Symbol") {
+            const rArray = tk_array.slice(
+              tk_array.indexOf(NNTOKEN) + 1,
+              tk_array.length
+            );
+            let rindex = 0;
+            const tokens = [];
+            while (rindex < rArray.length) {
+              const tk = rArray[rindex];
+              if (tk.value === "}" && tk.type === "Symbol") break;
+              tokens.push(tk);
+              rindex += 1;
+            }
+            // console.log(tokens);
+            parsed.push({
+              type: "ConditionalEvaluation",
+              condition: expression.arguments[0],
+              then: parser(tokens),
+              else: 0
+            })
 
-        index += expression.na;
+            index += rindex
+           }
+        } else {
+          let declarer = "undef";
+          if (expression.name in compiledFunctions) {
+            declarer = {
+              content: compiledFunctions[expression.name],
+            };
+          }
+          parsed.push({
+            type: "Function",
+            name: expression.name,
+            arguments: expression.arguments,
+            __length: expression.na,
+            __declarer: declarer,
+          });
+        }
+        index += expression.na + 1
+
+        // console.log(expression.na);
+
       } else {
         parsed.push({
           type: "Identifier",
