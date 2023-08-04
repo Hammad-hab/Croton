@@ -1,7 +1,6 @@
 const { Exception } = require("./exceptionUtility");
 const { Enviornment } = require("./std");
-const callStack = [];
-
+let scope = Enviornment
 function evaluateCondition(parsedCondition) {
   const operation = parsedCondition.operation;
   if (parsedCondition.A.type && parsedCondition.A.type === "Conditional") {
@@ -33,24 +32,26 @@ function evaluateCondition(parsedCondition) {
 }
 
 const functionalEvaluation = (node) => {
-  if (!Enviornment[node.name]) {
+  if (!scope[node.name]) {
     return new Exception(
       0,
       `No function named ${node.name} was defined in the Standard Library`
     ).throw();
   }
-  const fn = Enviornment[node.name];
+  const fn = scope[node.name];
   const args = node.arguments.map(rEval);
   return fn(...args);
 };
 const identifierEvaluation = (node) => {
-  if (typeof Enviornment[node.name] != "number") {
-    if (!Enviornment[node.name] && Enviornment[node.name] != false) {
+  if (typeof scope[node.name] != "number") {
+    if (!scope[node.name] && scope[node.name] != false) {
       return new Exception(0, `Undefined Identifier ${node.name}`).throw();
     }
   }
-  return Enviornment[node.name];
-};
+  
+  const v = scope[node.name]
+    return v
+ };
 
 const objectAccessorEvaluation = (token) => {
   // console.log("accessor");
@@ -63,31 +64,24 @@ const objectAccessorEvaluation = (token) => {
   return value ? value : value;
 };
 
-const rEval = (token) => {
+const rEval = (token, evfn=false) => {
   if (token.type === "Function") return functionalEvaluation(token);
-  if (token.type === "Identifier") return identifierEvaluation(token);
-  if (token.type === "ObjectAccessor") return objectAccessorEvaluation(token);
-  if (token.type === "VariableDeclaration") return Enviornment.explicitDefine(token.name, rEval(token.assignee));
-  if (token.type === "ConditionalEvaluation") {
-    // console.log(token.condition);
-    const condition = rEval(token.condition)
-    if (condition) {
-      return rEval(token.then[0])
-    }
-  } 
+  if (token.type === "Identifier") return identifierEvaluation(token, evfn);
+  if (token.type === "VariableDeclaration") return scope.explicitDefine(token.name, rEval(token.assignee));
   if (token.type === "Conditional") return evaluateCondition(token);
+  if (token.type === "FunctionDeclaration") return identifierEvaluation(token)
   if (token.value) return token.value;
 };
 const evaluate = (tokens, ret=false, evfn=false) => {
-  // console.log(tokens)
   const data = [];
+  console.log(tokens);
   for (const token of tokens) {
-    if (evfn && (token.type === "Identifier" && token.name === "return")) {
-      
-        const Ntoken = rEval(tokens[tokens.indexOf(token) + 1])
+    if (evfn && (token.type === "Identifier" && token.name === "return")) {  
+        const Ntoken = rEval(tokens[tokens.indexOf(token) + 1], evfn)
         return Ntoken
     }
-    data.push(rEval(token));
+    const d = rEval(token,)
+    data.push(d);
   }
   if (ret) return data;
 };
@@ -106,5 +100,7 @@ module.exports = {
   evaluate,
   rEval,
   evaluateREPL,
-  Enviornment,
+  scope,
+  Enviornment
 };
+

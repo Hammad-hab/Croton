@@ -2,6 +2,7 @@
   "dependencies": {
     "@babel/parser": "^7.22.5",
     "babel": "^6.23.0",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "supports-color": "^9.4.0"
   }
 }

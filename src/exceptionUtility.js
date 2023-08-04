@@ -7,7 +7,7 @@ class Exception {
   }
 
   throw() {
-    console.log(this.message);
+      console.log(`\x1b[31m${this.message}\x1b[0m`);
     if (!Exception.PREV_M) {
       exit(1);
     }
@@ -17,3 +17,5 @@ class Exception {
 module.exports = {
   Exception,
 };
+
+// \x1b[31m${text}\x1b[0m

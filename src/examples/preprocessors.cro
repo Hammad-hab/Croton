@@ -1,0 +1,6 @@
+@disable VariableDeclarationParse@
+@disable IdentifierParse@
+
+fn main() {
+    
+}

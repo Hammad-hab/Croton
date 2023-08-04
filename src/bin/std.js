@@ -6,6 +6,11 @@ const explicitDefine = (env, name, value) => {
 
 const RawProgrammaticEnviornment = {
   print: (...data) => {
+    data.forEach(v => {
+      if (typeof v === "function") {
+        v = "fn"
+      } 
+    })
     console.log(data.join(""));
   },
   input: (prompt) => {
@@ -31,7 +36,7 @@ const RawProgrammaticEnviornment = {
   PI: Math.PI,
   E: Math.E,
   INF: Infinity,
-  
+
   explicitDefine,
   "false": false,
   "true": true,
@@ -39,7 +44,8 @@ const RawProgrammaticEnviornment = {
     for (let i = 0; i < times ; i++) {
       fn(i + 1)
     }
-  }
+  },
+  undef : null
 };
 
 const cloneEnvObject = (env) => {

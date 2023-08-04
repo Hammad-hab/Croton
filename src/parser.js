@@ -1,378 +1,77 @@
-const { Exception } = require("./exceptionUtility");
-const { Enviornment } = require("./std");
-const { evaluate } = require("./evaluator");
-const fs = require("fs");
+const { PREPROCESSORZ, PR_EN_EXTENSIONS } = require("./Preprocessers/index");
 const { tokenize } = require("./lexer");
-function using(module) {
-  const data = fs.readFileSync(module, { encoding: "utf-8" });
-  const tk = tokenize(data);
-  let pr = parser(tk);
-  const targets = [];
-  const targetAlias = [];
-  pr.forEach((v) => {
-    if (
-      v.type === "Function" &&
-      v.name === "exports" &&
-      v.arguments.length > 0
-    ) {
-      v.arguments.forEach((arg) =>
-        arg.type === "Identifier" || arg.type === "Function"
-          ? targetAlias.push(arg.name)
-          : new Exception(
-              0,
-              `Attemtping to export a non-exportable object ${arg.value}`
-            ).throw()
-      );
-    }
-  });
-  pr.forEach((v) => {
-    if (targetAlias.includes(v.name)) {
-      targets.push(v);
-    }
-  });
-  return targets;
-}
 
-function functionalParse(array, name) {
-  const rArray = array.slice(array.indexOf(name) + 1, array.length);
-  let index = 0;
-  let paramController = 0;
-  let fVal = 0;
-  const args = [];
-
-  while (index < rArray.length) {
-    const tk = rArray[index];
-
-    if (tk.value === "(") {
-      paramController += 1;
-    }
-
-    if (tk.value === ")") {
-      paramController -= 1;
-    }
-
-    if (paramController <= 0) {
-      fVal = index;
-      break;
-    }
-
-    args.push(tk);
-
-    index += 1;
-  }
-
-  if (paramController > 0) {
-    new Exception(
-      index,
-      `Missing token ")" at ${index}. 
-    Lack of closing braces can lead to unexpected behavior therefore the parser has terminated your action`
-    ).throw();
-  }
-
-  args.shift();
-  const arguments = parser(args);
-
-  return {
-    name: name.value,
-    arguments: Array.isArray(arguments) ? arguments : [arguments],
-    na: fVal + 1,
-    len: args.length
-  };
-}
-
-function properticalPrase(array, token) {
-  let rArray = array.slice(array.indexOf(token) - 1, array.length);
-  // console.log("fr", rArray);
-  let index = 0;
-  let accessors = [];
-  let accessOperatorController = 0;
-  while (index < rArray.length) {
-    const tk = rArray[index];
-    if (tk.value === "|") {
-      accessOperatorController += 1;
-      index += 1;
-      continue;
-    }
-    if (
-      tk.type === "Name" &&
-      rArray[index - 1] &&
-      rArray[index - 1].value === "|"
-    ) {
-      accessOperatorController -= 1;
-      accessors.push(tk);
+/**
+ *
+ * @param {[{type:"Name" | "String" | "Symbol" | "Preprocesser" | "Numeric", position: Number, value: Number | String}]} tokens_array
+ * @returns {[]}
+ */
+function parse(tokens_array) {
+  const AST = [];
+  const cachedLength = tokens_array.length;
+  for (let index = 0; index < cachedLength; ) {
+    const token = tokens_array[index];
+    if (token.type === "Preprocesser") {
+      PREPROCESSORZ[token.name](token.target, token.operation);
       index += 1;
       continue;
     }
 
-    if (
-      accessOperatorController <= 0 &&
-      rArray[index + 1] &&
-      rArray[index + 1].value != "|"
-    ) {
-      index += 1;
-      break;
-    }
+    // Parsing Numbers. In the end, this condition evaluates if the token is a FloatLiteral or an IntegerLiteral
+    if (token.type === "Numeric") {
+      let type;
+      if (Number.isInteger(token.value)) type = "IntegerLiteral";
+      else type = "FloatLiteral";
 
-    index += 1;
-  }
-  const BaseAccessor = accessors[0];
-  // console.log(accessors.slice(1, accessors.length));
-  return {
-    length: accessors.length,
-    base: BaseAccessor,
-    accessors: accessors,
-  };
-}
-
-class CrotonFunction {
-  constructor(name, type) {
-    this.name = name;
-    this.type = type;
-
-    this.contents = null;
-  }
-
-  addContents(contents) {
-    this.contents = parser(contents);
-  }
-  __execute(...args) {
-    let variables = [];
-
-    args.forEach((v, i) => {
-      variables.push(
-        ...parser(
-          tokenize(
-            `arg${i} = ${typeof v === "string" ? '"' : ""}${v}${
-              typeof v === "string" ? '"' : ""
-            }`
-          )
-        )
-      );
-    });
-    variables.push(...this.contents);
-    // variables = variables.slice(0, variables.length - 1)
-    let doesReturn = true;
-    let hasScope = true;
-    if (this.type === "VOID_FN") {
-      doesReturn = false;
-      hasScope = false;
-    }
-    if (this.type === "RETN_FN") {
-      doesReturn = true;
-      hasScope = false;
-    }
-    const d = evaluate(variables, false, true);
-
-    if (doesReturn) {
-      return d;
-    } else {
-      return "undef";
-    }
-  }
-  declare() {
-    const crFunction = this;
-    Enviornment.explicitDefine(this.name, function (...args) {
-      return crFunction.__execute(...args);
-    });
-    crFunction.envInstance = Enviornment[this.name];
-  }
-}
-
-function parser(tk_array) {
-  let parsed = [];
-  let index = 0;
-  let compiledFunctions = {};
-  while (index < tk_array.length) {
-    const token = tk_array[index];
-    if (token.type === "Name" && token.value === "Begin") {
-      index += 1;
-      continue;
-    }
-    if (
-      tk_array[index + 1] &&
-      tk_array[index + 1].type === "Symbol" &&
-      (tk_array[index + 1].value === ">" ||
-        tk_array[index + 1].value === "<" ||
-        tk_array[index + 1].value === "~" ||
-        tk_array[index + 1].value === ":" ||
-        tk_array[index + 1].value === "&")
-    ) {
-      // conditional
-      const comparitiveA = parser([token])[0];
-      let targets = tk_array.slice(index + 2, tk_array.length);
-      const parsedNextCondition = parser(targets)[0];
-
-      parsed.push({
-        type: "Conditional",
-        operation: tk_array[index + 1].value,
-        A: comparitiveA,
-        B: parsedNextCondition,
-      });
-
-      index += 4;
-      continue;
-    }
-
-    if (token.type === "Name") {
-      const NTOKEN = tk_array[index + 1];
-      token.parsed = true;
-
-      if (token.value === "declare") {
-        const functionType = NTOKEN.value;
-        const functionName = tk_array[index + 2].value;
-        const functionExecutable = new CrotonFunction(
-          functionName,
-          functionType
-        );
-        compiledFunctions[functionName] = functionExecutable;
-        let expStart = tk_array[index + 3];
-        if (expStart.type === "Symbol" && expStart.value === "{") {
-          const rArray = tk_array.slice(
-            tk_array.indexOf(NTOKEN) + 1,
-            tk_array.length
-          );
-          let rindex = 0;
-          const tokens = [];
-          while (rindex < rArray.length) {
-            const tk = rArray[rindex];
-            if (tk.value === "}" && tk.type === "Symbol") break;
-            tokens.push(tk);
-            rindex += 1;
-          }
-          functionExecutable.addContents(tokens);
-          functionExecutable.declare();
-          index += 3 + rindex;
-          continue;
-        } else {
-          new Exception(
-            NTOKEN.position,
-            `Unexpected token ${NTOKEN.value} at ${NTOKEN.position}. Broken attempt to declare function`
-          ).throw();
-        }
-      }
-
-      if (NTOKEN && NTOKEN.type === "Symbol" && NTOKEN.value === "|") {
-        const expression = properticalPrase(tk_array, NTOKEN);
-        parsed.push({
-          type: "ObjectAccessor",
-          acc: expression.accessors,
-          base: expression.base,
-        });
-        index += expression.length + 2;
-        continue;
-      }
-
-      if (NTOKEN && NTOKEN.type === "Symbol" && NTOKEN.value === "=") {
-        const name = token.value;
-        let targets = tk_array.slice(index + 2, tk_array.length);
-        const assignee = parser(targets);
-        parsed.push({
-          type: "VariableDeclaration",
-          name,
-          assignee: assignee[0],
-        });
-        if (assignee[0].type === "Function") index += assignee[0].__length;
-        index += 3;
-        continue;
-      }
-
-      if (NTOKEN && NTOKEN.type === "Parenthesis") {
-        // Funtion call
-        const expression = functionalParse(tk_array, token);
-        if (expression.name === "if") {
-        // console.log(expression.len);
-           const NNTOKEN = tk_array[index + expression.len + 3]
-          //  console.log(NNTOKEN)
-           if (NNTOKEN.value === "{" && NNTOKEN.type === "Symbol") {
-            const rArray = tk_array.slice(
-              tk_array.indexOf(NNTOKEN) + 1,
-              tk_array.length
-            );
-            let rindex = 0;
-            const tokens = [];
-            while (rindex < rArray.length) {
-              const tk = rArray[rindex];
-              if (tk.value === "}" && tk.type === "Symbol") break;
-              tokens.push(tk);
-              rindex += 1;
-            }
-            // console.log(tokens);
-            parsed.push({
-              type: "ConditionalEvaluation",
-              condition: expression.arguments[0],
-              then: parser(tokens),
-              else: 0
-            })
-
-            index += rindex
-           }
-        } else {
-          let declarer = "undef";
-          if (expression.name in compiledFunctions) {
-            declarer = {
-              content: compiledFunctions[expression.name],
-            };
-          }
-          parsed.push({
-            type: "Function",
-            name: expression.name,
-            arguments: expression.arguments,
-            __length: expression.na,
-            __declarer: declarer,
-          });
-        }
-        index += expression.na + 1
-
-        // console.log(expression.na);
-
-      } else {
-        parsed.push({
-          type: "Identifier",
-          name: token.value,
-        });
-        index += 1;
-      }
-
-      continue;
-    }
-
-    if (token.type === "Number") {
-      parsed.push({
-        type: "NumericLiteral",
+      AST.push({
+        type, // FloatLiteral | IntegerLiteral
+        baseType: token.type, // baseType repersents the original type of the lexed token
         value: token.value,
+        positionedAt: token.position,
       });
       index += 1;
-
-      continue;
+      continue; // This is to prevent the loop from going forward. If the loop, by some means, did get forward, it'd parse the same token again and again.
     }
-
+    // Parsing Strings. This is the simplest stage of parsing
     if (token.type === "String") {
-      parsed.push({
-        type: "StringLiteral",
+      AST.push({
+        type: token.type,
         value: token.value,
+        positionedAt: token.position,
       });
       index += 1;
       continue;
     }
 
-    index += 1;
-  }
-  copiedParsed = [];
-  parsed.forEach((v) => {
-    if ((v.type === "Function" && v.name === "using") || v.name === "exports") {
-      if (v.name === "using") {
-        const importedTargets = using(v.arguments[0].value);
-
-        copiedParsed.push(...importedTargets);
+    /**
+     * Parsing Names. This step is a bit more complex as the returned value can vary.
+     * The Parsed Token could result in a statment, a variable or a function. That is
+     * percisely why this part is a bit abstract.
+     */
+    if (token.type === "Name") {
+      innerParser: for (const key in PR_EN_EXTENSIONS) {
+        if (PR_EN_EXTENSIONS[key]) {
+          const data = PR_EN_EXTENSIONS[key](token, tokens_array, index, parse);
+          index += data.length;
+          if (data) {
+            AST.push(data);
+            break innerParser;
+          } else {
+            continue;
+          }
+        }
       }
-    } else {
-      copiedParsed.push(v);
+      continue;
     }
-  });
-
-  return copiedParsed;
+  }
+  return AST;
 }
+const tk = tokenize(`
+@disable VariableDeclarationParse@
+@disable identiferParse@
+hm()
+`);
 
-module.exports = {
-  parser,
-};
+// console.log(tk);
+const or = parse(tk);
+console.log(or);

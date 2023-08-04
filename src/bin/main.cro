@@ -1,0 +1,7 @@
+declare VOID_FN g {
+      print(12)
+      return 4
+}
+declare VOID_FN da {
+      return 4
+}(g)

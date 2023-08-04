@@ -1,0 +1,38 @@
+#!/usr/local/bin/node
+const { stdin, stdout, exit } = require("process");
+const readline = require("readline/promises");
+const { tokenize } = require("./lexer");
+const { parser } = require("./parser");
+const { evaluate, evaluateREPL, Enviornment } = require("./evaluator");
+const { argv } = require("process");
+const fs = require("fs");
+const { Exception } = require("./exceptionUtility");
+
+if (argv.length > 2) {
+  fs.readFile(argv[2], "utf-8", (err, buffer) => {
+    if (argv[2].endsWith(".occ")) {
+      const Evaluate = evaluate(JSON.parse(buffer));
+    } else {
+      const Tokens = tokenize(buffer);
+      const Parse = parser(Tokens);
+      // console.log(Parse);
+      const Evaluate = evaluate(Parse);
+    }
+  });
+} else {
+  Exception.PREV_M = true;
+  Enviornment.explicitDefine("exit", () => {
+    exit(0);
+  });
+  const rl = require("readline-sync");
+  function doREPLStuff() {
+    const v = rl.question("Croton % ");
+    const Tokens = tokenize(v);
+    const Parse = parser(Tokens);
+    const Evaluate = evaluate(Parse, true)[0];
+    void Evaluate && Evaluate.length > 0 ? console.log(Evaluate) : ""
+
+    doREPLStuff();
+  }
+  doREPLStuff();
+}
