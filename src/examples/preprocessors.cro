@@ -1,6 +1,4 @@
-@disable VariableDeclarationParse@
-@disable IdentifierParse@
+[parserlog DEBUG-LOG-:-declaring-main-function]
+declare Main {
 
-fn main() {
-    
 }

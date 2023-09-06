@@ -11,6 +11,7 @@ function parse(tokens_array) {
   const cachedLength = tokens_array.length;
   for (let index = 0; index < cachedLength; ) {
     const token = tokens_array[index];
+    // console.log(token)
     if (token.type === "Preprocesser") {
       PREPROCESSORZ[token.name](token.target, token.operation);
       index += 1;
@@ -52,8 +53,8 @@ function parse(tokens_array) {
       innerParser: for (const key in PR_EN_EXTENSIONS) {
         if (PR_EN_EXTENSIONS[key]) {
           const data = PR_EN_EXTENSIONS[key](token, tokens_array, index, parse);
-          index += data.length;
           if (data) {
+            index += data.length;
             AST.push(data);
             break innerParser;
           } else {
@@ -66,12 +67,17 @@ function parse(tokens_array) {
   }
   return AST;
 }
-const tk = tokenize(`
-@disable VariableDeclarationParse@
-@disable identiferParse@
-hm()
-`);
+// const tk = tokenize(`
+// [parserlog DEBUG-LOG-:-declaring-main-function]
+// declare Main {
+
+// }
+// `);
 
 // console.log(tk);
-const or = parse(tk);
-console.log(or);
+// const or = parse(tk);
+// console.log(or);
+
+module.exports = {
+  parse
+}

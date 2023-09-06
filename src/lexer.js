@@ -27,12 +27,12 @@ function tokenize(string = "") {
       }
       continue;
     }
-    if (character === "@") {
+    if (character === "[") {
       let character = string[(cursor += 1)];
       let content = "";
-      while (character != "@") {
+      while (character != "]") {
         character = string[cursor];
-        if (character === "@") {
+        if (character === "]") {
           cursor += 1;
           break;
         }

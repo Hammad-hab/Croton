@@ -1,0 +1,150 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Croton</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <a href="https://github.com/Hammad-hab/Croton">
+      <div id="linktogithub">
+        <img src="github-mark.png" alt="" />
+        <small> See On github </small>
+      </div>
+    </a>
+
+    <header>
+      <h1>Croton</h1>
+      <p class="big">Burn the structure & take control</p>
+      <div id="center">
+        <button class="btn btn-warning">Get Started</button>
+      </div>
+      <br />
+    </header>
+    <div id="nav">
+      <ul>
+        <li>Home</li>
+        <li>Get prerelease</li>
+        <li id="about">About Project</li>
+        <li>Docs</li>
+      </ul>
+    </div>
+
+    <div id="main">
+      <div id="intro">
+        <div id="headingContainer">
+          <h1>What is Croton?</h1>
+        </div>
+        <p>
+          A multiparadigm, dynamically typed, general-purpose, futuristic,
+          verbose, <b>HIGH-LEVEL</b> programming language that stands for:
+        </p>
+
+        <div id="cardContainer">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Scalablity</h5>
+              <p class="card-text">
+                Even though Croton is a verbose language, it's syntax and
+                controlability allows it to be used at the greatest extent.
+                Small applications can be extended to make fully-fledged
+                projects without breaking any code.
+              </p>
+            </div>
+          </div>
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Uniqueness</h5>
+              <p class="card-text">
+                Unlike most languages, Croton features a whole new syntax that
+                differs from the traditional C-style-syntax. This allows Croton
+                code to be distinguishable in polyglot programming. It also uses
+                various algorithms and methods to get your program to work the
+                way you want it to.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Control</h5>
+              <p class="card-text">
+                This is where this programming language really shines. Croton
+                allows you to control <i>how</i> your code works. Meaning that
+                you can choose how a function or variable interacts with other
+                programatic phenomenons such as scope! As the programmer is in
+                control of these phenomenons, the program is easy to understand
+                and control
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Your language, your choice</h5>
+              <p class="card-text">
+                The Croton Language execute anything on its own, instead it
+                <i>only</i> does what you tell it to. You can disable language
+                features that seem useless to you and enable the ones that sound
+                appealing. This essentially means that you can control what the
+                interpreter parses and what it ignores.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+        <div id="headingContainer">
+          <h1>Build it in Croton</h1>
+        </div>
+        <p>
+          Even though Croton is not optomised for performance critical tasks,
+          you can still:
+        </p>
+
+        <div id="cardContainer">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Integrate with NodeJS</h5>
+              <p class="card-text">
+                Croton is build in JavaScript and therefore it has direct access
+                to all JS modules. It can do everything JS can do! All you need
+                to do it fireup the <code>@extension</code> preprocessor to
+                direcly import a JavaScript file and use it any way you want!
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Make websites!</h5>
+              <p class="card-text">
+                Use Croton server to use client-side JS capibilites.
+                All you need to do is attain a copy of Croton server
+                which compiles code into JavaScript and you are good to
+                go!
+              </p>
+            </div>
+          </div>
+        </div>
+        <h4>And more!</h4>
+
+      </div>
+    </div>
+
+    <script>
+      const about = document.querySelector("#about");
+      about.addEventListener("click", (e) => {
+        console.log("f");
+        about.scrollIntoView({ behavior: "smooth" });
+      });
+    </script>
+  </body>
+</html>

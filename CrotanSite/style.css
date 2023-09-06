@@ -1,0 +1,156 @@
+/* Improrting Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap");
+
+
+* {
+  font-family: Quicksand;
+}
+
+header {
+  min-height: 40vh;
+  background-image: url(https://images.unsplash.com/photo-1517055729445-fa7d27394b48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80);
+  filter: contrast(0.4);
+  background-attachment: fixed;
+  padding: 10px;
+  /* min-width: 100vw !important; */
+  /* border-bottom: 30px solid limegreen; */
+}
+
+div#center {
+  display: flex;
+  align-items:end;
+  /* filter: contrast(1.6); */
+  justify-content: center;
+}
+
+body {
+  margin: 0;
+  padding: 0px;
+  margin-bottom: 100% !important;
+  
+}
+
+header p, header h1 {
+  color: limegreen !important;
+  text-align: center;
+}
+
+header p.big {
+  font-size: 35px;
+  /* mix-blend-mode:difference */
+}
+
+
+@media screen and (max-width:824px) {
+    header {
+        height: 30vh;
+    }
+}
+
+div#main {
+  margin: 50px;
+}
+
+
+.centre {
+  text-align: center;
+}
+
+#headingContainer {
+  border-bottom: 15px solid limegreen;
+  width: fit-content;
+}
+
+#cardContainer {
+  display: flex;  
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+
+img {
+  width:50px; /* you can use % */
+  height: auto;
+}
+
+div#linktogithub 
+{
+  position: absolute;
+  z-index: 2;
+  /* border: 1px solid black; */
+  margin: 10px;
+  padding: 5px;
+  border-radius: 10px;
+  backdrop-filter: blur(0.5px);
+  transition: all 0.5s;
+  color: black;
+}
+div#linktogithub small
+{
+opacity: 0;
+transition: all 0.5s;
+
+}
+
+div#linktogithub:hover small{
+  
+  opacity: 1;
+
+}
+
+@media screen and (max-width: 1249px){
+  #cardContainer {
+    flex-direction: column; 
+  }
+
+}
+
+@media only screen and (max-width: 415px){
+  div#nav > ul > li  {
+    display: block;
+    min-width: 100vw;
+  }
+
+  div#nav > ul
+  {
+    margin: 0;
+    padding: 0;
+  }
+  div#nav {
+    position: initial !important;
+  }
+}
+
+@media only screen and (max-width: 320px){
+ header {
+  min-height: 60vh;
+ }
+}
+
+div#nav > ul > li {
+  display: inline-block;
+  background-color: limegreen;
+  padding: 10px;
+  margin: 0;
+  border: none;
+  transition: all 0.5s;
+  user-select: none;
+  border-bottom: 1px solid green;
+
+}
+div#nav > ul > li:hover {
+  background-color: green;
+}
+#nav {
+  background-color: limegreen;
+  min-width:fit-content;
+  min-height: fit-content;
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2;
+}
