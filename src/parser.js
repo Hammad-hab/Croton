@@ -8,12 +8,16 @@ const { tokenize } = require("./lexer");
  */
 function parse(tokens_array) {
   const AST = [];
+  const MAX_DEPTH_EXCEED = 100000000000000;
   const cachedLength = tokens_array.length;
+  let Depth = 0;
   for (let index = 0; index < cachedLength; ) {
     const token = tokens_array[index];
-    // console.log(token)
     if (token.type === "Preprocesser") {
-      PREPROCESSORZ[token.name](token.target, token.operation);
+      data = PREPROCESSORZ[token.name](token.target, token.operation);
+      if (data) {
+        AST.push(...parse(data))
+      }
       index += 1;
       continue;
     }
@@ -49,35 +53,40 @@ function parse(tokens_array) {
      * The Parsed Token could result in a statment, a variable or a function. That is
      * percisely why this part is a bit abstract.
      */
+
+ 
     if (token.type === "Name") {
-      innerParser: for (const key in PR_EN_EXTENSIONS) {
+      for (const key in PR_EN_EXTENSIONS) {
         if (PR_EN_EXTENSIONS[key]) {
           const data = PR_EN_EXTENSIONS[key](token, tokens_array, index, parse);
           if (data) {
             index += data.length;
             AST.push(data);
-            break innerParser;
+            // console.log(AST)
+            break;
           } else {
             continue;
           }
         }
       }
+      // index +=1
       continue;
     }
   }
   return AST;
 }
-// const tk = tokenize(`
-// [parserlog DEBUG-LOG-:-declaring-main-function]
-// declare Main {
-
-// }
-// `);
-
-// console.log(tk);
-// const or = parse(tk);
-// console.log(or);
 
 module.exports = {
-  parse
-}
+  parse,
+};
+// str=`
+// println(100 201)
+// println(100 200)
+// println(100 200)
+// `
+// tokens = tokenize(str)
+// // console.log(str[16])
+// console.log(
+// parse(tokens)
+
+// )

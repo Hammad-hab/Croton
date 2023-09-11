@@ -2,6 +2,9 @@ const cluster = require("cluster")
 const { Exception } = require("../exceptionUtility");
 const os = require("os");
 const { pid } = require("process");
+const {tokenize} = require("../lexer")
+const fs = require("fs")
+
 const { enable, disable, PR_EN_EXTENSIONS } = require("./enable");
 
 const PREPROCESSORZ = {
@@ -12,7 +15,20 @@ const PREPROCESSORZ = {
         value = value.replaceAll("-", " ")
         console.log(value)
     },
+    include: (File) => {
+        try {
+            var file = tokenize(fs.readFileSync(File, "utf-8"))
+        } catch (e) {
+            return new Exception(-1, `Broken <include>. Cannot import ${file} beacause it is EITHER non-existant or broken.`).throw()
+        }
+        return file
+    },
+    abort: (value) => {
+        if (!value) value = "Aborting..."
+        new Exception(-1, `Program Forcefully exited with the following message:\n      ${value}`).throw()
+    },
     multithread(value) {
+        new Exception(-1, "Multithreading preprocessor is yet under beta testing. For now it is not usable").throw()
         if (typeof value === "string") value = parseInt(value)
         const MAX_CPUS = os.cpus().length
         if (MAX_CPUS < 3) {

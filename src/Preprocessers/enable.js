@@ -8,7 +8,7 @@ const PR_AV_EXTENSIONS = {
 }
 let PR_EN_EXTENSIONS = {
     FunctionDeclarationParse,
-    VariableDeclarationParse,
+    // VariableDeclarationParse,
     FunctionParse,
     IdentifierParse,
 }

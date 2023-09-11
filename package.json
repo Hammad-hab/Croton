@@ -1,7 +1,13 @@
 {
+  "name": "croton-lang",
+  "main": "index.js",
+  "bin": {
+    "crotonc": "./index"
+  },
   "dependencies": {
     "@babel/parser": "^7.22.5",
     "babel": "^6.23.0",
+    "lodash": "^4.17.21",
     "readline-sync": "^1.4.10",
     "supports-color": "^9.4.0"
   }

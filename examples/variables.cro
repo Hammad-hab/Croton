@@ -1,0 +1,5 @@
+define("MyName" "Hammad Ali Butt")
+define("MyAge" "14")
+# Croton does support the standard variable declaration but it is not recommended because of slow performance
+and unexpected results #
+println("I am "  MyName " and I am " MyAge " years old")

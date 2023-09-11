@@ -38,6 +38,8 @@ class Scope {
     return null;
   }
 }
+const globalScope = new Scope("GlobalScope");
+
 // const GlobalScope = new Scope("B");
 // const LocalScope = new Scope("FD");
 // const SiblingLocalScope = new Scope("SC");
@@ -53,4 +55,5 @@ class Scope {
 // console.log(SiblingLocalScope.strictSearch("Lacheve"));
 module.exports = {
   Scope,
+  globalScope
 };

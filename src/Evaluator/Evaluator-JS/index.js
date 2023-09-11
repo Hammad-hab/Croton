@@ -1,13 +1,9 @@
-const { tokenize } = require("../../lexer");
-const { parse } = require("../../parser");
-const { Scope } = require("./scope");
+const { globalScope } = require("./scope");
+const {Object} = require("./datatypes/Object")
+require("./stdlib")()
 
-const scope = new Scope("GlobalScope");
-const subScope = new Scope("LocalScope")
-scope.define("dftba", console.log);
-scope.appendScope(subScope)
-
-function evaluate(parsedToken, scope) {
+function evaluate(parsedToken, scope, line) {
+ if (parsedToken) {
   if (parsedToken.type === "Function") {
     const fn = scope.strictSearch(parsedToken.name);
     parsedToken.arguments.forEach((v, i) => {
@@ -17,23 +13,29 @@ function evaluate(parsedToken, scope) {
       return fn(...parsedToken.arguments);
     }
   }
-  
-
   if (parsedToken.type === "VariableDeclaration") {
-     return scope.define(parsedToken.name, parsedToken.assignee);
+     return scope.define(parsedToken.name, evaluate(parsedToken.assignee, scope));
   }
   if (parsedToken.type === "Identifier") {
-    return scope.strictSearch(parsedToken.name)
+    const obj = scope.strictSearch(parsedToken.name)
+    return new Object(obj, parsedToken.name)
   }
-  if (parsedToken) return parsedToken.value;
-
+  if (parsedToken) {
+    const object = new Object(parsedToken.value, Object.UNDEF)
+    return object
+  }
+ }
 }
 
-const p = parse(
-  tokenize(`
-    hello = "world"
-    dftba(hello)
-`)
-);
-evaluate(p[0], subScope);
-evaluate(p[1], subScope);
+function SpawnEvaluator(parsedTokens) {
+  let line = 1
+  let Scope = globalScope
+  for (const parsedToken of parsedTokens) {
+      evaluate(parsedToken, Scope, line)
+      line += 1
+  }
+}
+
+module.exports = {
+  evaluate, SpawnEvaluator
+}

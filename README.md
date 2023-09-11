@@ -16,58 +16,12 @@ While it is true that croton is a curly-bracket language like C, croton tends to
 
 ##### Hello world example:
 
-```cpp
-@ Hello World Program! @
-using("./crotonlib/stdout.cro")
-print("Hello World!")
+```rust
+[parserlog Hello-World]
 ```
 
-##### Print name example:
+OR
 
-```cpp
-@ Name printer @
-
-using("./crotonlib/stdout.cro")
-user-name = input("Hi, What's your name? ")
-print("Hello", user-name)
-```
-
-##### Advance name printer example:
-
-```cpp
-@ Advance name printer that uses functions! @
-using("./crotonlib/stdout.cro")
-declare sayHelloTo {
-	print("Hello", arg0)
-}
-name = input("Hi, Whats your name? ")
-sayHelloTo(name)
-```
-
-##### Number comparer example:
-
-```cpp
-@
-	Welcome to this program. In this program we compare 2 numbers
-	that are entered by the user
-@
-using("./crotonlib/stdout.cro")
-declare compareNumbers {
-	n1 = arg0
-	n2 = arg1
-	print("N1 is greater than N2? ", n1 > n2)
-	print("N1 is less than N2? ", n1 < n2)
-	print("N1 is equal to N2? ", n1 ~ n2)
-	noreturn
-}
-compareNumbers(10, 20)
-```
-
-##### Module Example:
-
-```cpp
-declare toBeExported {
-	@...function stuff...@
-}
-exports(toBeExported)
+```js
+dftba("Hello World")
 ```
