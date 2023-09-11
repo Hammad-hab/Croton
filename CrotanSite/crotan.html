@@ -31,7 +31,7 @@
     <div id="nav">
       <ul>
         <li>Home</li>
-        <li>Get prerelease</li>
+        <li id="prerelease">Get prerelease</li>
         <li id="about">About Project</li>
         <li>Docs</li>
       </ul>
@@ -53,7 +53,7 @@
               <h5 class="card-title">Scalablity</h5>
               <p class="card-text">
                 Even though Croton is a verbose language, it's syntax and
-                controlability allows it to be used at the greatest extent.
+                controllability allows it to be used at the greatest extent.
                 Small applications can be extended to make fully-fledged
                 projects without breaking any code.
               </p>
@@ -112,12 +112,23 @@
         <div id="cardContainer">
           <div class="card" style="width: 18rem">
             <div class="card-body">
-              <h5 class="card-title">Integrate with NodeJS</h5>
+              <h5 class="card-title">Integrate with NodeJS & BunJS</h5>
               <p class="card-text">
                 Croton is build in JavaScript and therefore it has direct access
                 to all JS modules. It can do everything JS can do! All you need
-                to do it fireup the <code>@extension</code> preprocessor to
-                direcly import a JavaScript file and use it any way you want!
+                to do is direcly import a JavaScript file and use it any way you
+                want!
+              </p>
+            </div>
+          </div>
+
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title">Make Domain Specific Language!</h5>
+              <p class="card-text">
+                Croton's syntax is entirely extensible. You can write your own
+                rules using the parser API and can extend the syntax to make
+                your own Domain Specific Language!
               </p>
             </div>
           </div>
@@ -126,24 +137,52 @@
             <div class="card-body">
               <h5 class="card-title">Make websites!</h5>
               <p class="card-text">
-                Use Croton server to use client-side JS capibilites.
-                All you need to do is attain a copy of Croton server
-                which compiles code into JavaScript and you are good to
-                go!
+                Use Croton server to use client-side JS capibilites. All you
+                need to do is attain a copy of Croton server which compiles code
+                into JavaScript and you are good to go!
               </p>
             </div>
           </div>
         </div>
-        <h4>And more!</h4>
+        <hr />
+        <div id="headingContainer">
+          <h1 id="prerel">Get Prerelease/Beta</h1>
+        </div>
 
+        <p>
+          The Croton Project is Underdevelopment. The Standard Library is quite
+          sparse, many functionalities are buggy while others are yet unimplemented.
+          But you can still get your hands on a beta test release by cloning the github Repository
+          or simply by running the following command if you have git installed:
+          <br>
+          <blockquote style="text-align: center; user-select:none;"data-toggle="tooltip" data-placement="top" title="Click to copy ME!">
+            <code style="background-color:rgb(243, 243, 243);padding:10px; border-radius: 10px">git clone https://github.com/Hammad-hab/Croton.git</code>
+          </blockquote>
+          <br>
+          However, if you do not have git installed, you can just download it <a href="https://github.com/Hammad-hab/Croton/archive/refs/heads/main.zip">here</a>.
+          <br>
+          <b >Please note that this language is yet experiemental. Using it in production is definitely NOT recommended </b>
+        </p>
       </div>
     </div>
 
     <script>
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+      document.querySelector("blockquote").addEventListener("click", () => {
+        navigator.clipboard.writeText("git clone https://github.com/Hammad-hab/Croton.git")
+       
+      })
       const about = document.querySelector("#about");
+      const prerelease = document.querySelector("#prerelease");
       about.addEventListener("click", (e) => {
-        console.log("f");
-        about.scrollIntoView({ behavior: "smooth" });
+        document.querySelector("#intro").scrollIntoView({ behavior: "smooth" });
+      });
+      prerelease.addEventListener("click", (e) => {
+        document
+          .querySelector("#prerel")
+          .scrollIntoView({ behavior: "smooth" });
       });
     </script>
   </body>

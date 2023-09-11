@@ -26,7 +26,7 @@ div#center {
 body {
   margin: 0;
   padding: 0px;
-  margin-bottom: 100% !important;
+  /* margin-bottom: 100% !important; */
   
 }
 
@@ -123,11 +123,21 @@ div#linktogithub:hover small{
   div#nav {
     position: initial !important;
   }
+  blockquote {
+    text-align: initial;
+    padding: 0px
+   }
+   code{
+    padding: 0px;
+   }
 }
 
 @media only screen and (max-width: 320px){
  header {
   min-height: 60vh;
+ }
+ blockquote {
+  text-align: initial;
  }
 }
 
