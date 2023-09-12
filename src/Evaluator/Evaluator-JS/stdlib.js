@@ -14,25 +14,21 @@ const USE = () => {
         let value = ""
         for (const arg of objects) {
          if (arg instanceof Object) {
-            value += arg.$repersent$()
-         } else {
-           value += arg
+            value += arg.repersent()
          }
         }
        console.log(value)
    })
-   globalScope.define("define", (name, value) => {
-    name = Abstract("value", name)
+   globalScope.define("define", (name, value) => { 
+    name = Abstract(name.type === "Identifier" ? "name" : "value", name)
     value = Abstract("value", value)
     globalScope.define(name, value)
    })
-
    /* Mathematical Functions */
   
    globalScope.define("sum", (...args) => {
     return _.sum(refine(...args))
    })
-
    globalScope.define("subtract", (...args) => {
     return _.subtract(refine(...args))
    })
@@ -42,8 +38,6 @@ const USE = () => {
    globalScope.define("divide", (arg0, arg1) => {
     return _.divide(refine(arg0, arg1))
    })
-   
-
-   
+   globalScope.define("CROTON", globalScope.self)
 }
 module.exports = USE

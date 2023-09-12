@@ -15,7 +15,9 @@ const PREPROCESSORZ = {
         value = value.replaceAll("-", " ")
         console.log(value)
     },
-    include: (File) => {
+    include: (File="") => {
+        if ('"' in File) File = File.replaceAll('"', "")
+        if ("'" in File) File = File.replaceAll("'", "")
         try {
             var file = tokenize(fs.readFileSync(File, "utf-8"))
         } catch (e) {
@@ -48,6 +50,11 @@ const PREPROCESSORZ = {
             }
         } 
     },
+    sharedMemoryRead(name) {
+        // const FILE = require("../shar")
+        const file = fs.readFileSync("./sharedfile.toml", "utf-8")
+        console.log(file)
+    }
 }
 module.exports = {
     PREPROCESSORZ,

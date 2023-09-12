@@ -137,7 +137,11 @@ div#linktogithub:hover small{
   min-height: 60vh;
  }
  blockquote {
-  text-align: initial;
+  text-align: left;
+  padding: 0px;
+ }
+ code{
+  padding: 0px;
  }
 }
 

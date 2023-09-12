@@ -1,5 +1,6 @@
 const { PREPROCESSORZ, PR_EN_EXTENSIONS } = require("./Preprocessers/index");
 const { tokenize } = require("./lexer");
+const ObjectAccessor = require("./Parser/ObjectAccessor")
 
 /**
  *
@@ -62,7 +63,6 @@ function parse(tokens_array) {
           if (data) {
             index += data.length;
             AST.push(data);
-            // console.log(AST)
             break;
           } else {
             continue;
@@ -72,6 +72,15 @@ function parse(tokens_array) {
       // index +=1
       continue;
     }
+
+    if (token.type === "Symbol") {
+      data = ObjectAccessor(token, tokens_array, index, parse)
+      if (data) {
+         AST.push(data)
+         index += data.length
+      }
+    }
+
   }
   return AST;
 }
@@ -79,14 +88,3 @@ function parse(tokens_array) {
 module.exports = {
   parse,
 };
-// str=`
-// println(100 201)
-// println(100 200)
-// println(100 200)
-// `
-// tokens = tokenize(str)
-// // console.log(str[16])
-// console.log(
-// parse(tokens)
-
-// )

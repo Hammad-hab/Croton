@@ -9,6 +9,7 @@
     "babel": "^6.23.0",
     "lodash": "^4.17.21",
     "readline-sync": "^1.4.10",
-    "supports-color": "^9.4.0"
+    "supports-color": "^9.4.0",
+    "toml": "^3.0.0"
   }
 }

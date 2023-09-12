@@ -1,5 +1,5 @@
 const {Exception} = require("../exceptionUtility.js")
-const {IdentifierParse, FunctionParse, VariableDeclarationParse,FunctionDeclarationParse} = require("../Parser/")
+const {IdentifierParse, FunctionParse, VariableDeclarationParse,FunctionDeclarationParse, ObjectAccessor} = require("../Parser/")
 const PR_AV_EXTENSIONS = {
     FunctionDeclarationParse,
     VariableDeclarationParse,
@@ -8,7 +8,6 @@ const PR_AV_EXTENSIONS = {
 }
 let PR_EN_EXTENSIONS = {
     FunctionDeclarationParse,
-    // VariableDeclarationParse,
     FunctionParse,
     IdentifierParse,
 }

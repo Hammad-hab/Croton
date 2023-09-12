@@ -10,6 +10,7 @@ class Scope {
 
   define(proprety, value) {
     this.self[proprety] = value;
+    return this.self[proprety]
   }
 
   assignParent(parentScope) {
