@@ -1,0 +1,11 @@
+# Method 1
+define(createFile, |File write|) # not reusable
+createFile("./somefile.txt", "Yea! I'm automatically created")
+# Method 2
+declare createFile { # reusable
+    Argument fileName as arg0
+    define(wr |File write|)
+    
+    wr(fileName, "")
+}
+createFile("./somefile.txt")

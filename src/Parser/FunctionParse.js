@@ -68,7 +68,6 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
         } else if (currentToken.value === ")") {
           parameterController--;
         }
-  
         parameters.push(currentToken);
   
         if (parameterController === 0) {
@@ -85,7 +84,9 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
       if (parameters[parameters.length - 1].value === ")") parameters.pop();
 
       const parsedParameters = parse(parameters);
-  
+      parsedParameters.forEach(element => {
+        element.isArgument = true
+      });
       return {
         type: "Function",
         name: token.value,

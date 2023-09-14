@@ -1,0 +1,9 @@
+declare Whats_your_name_and_age {
+    Argument name as arg0
+    Argument age as arg1
+    
+    println(name " is " age " years old")
+    return concat(name " is " age " years old")
+}
+
+Whats_your_name_and_age("Hammad" 14)

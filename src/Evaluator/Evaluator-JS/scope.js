@@ -17,6 +17,10 @@ class Scope {
     this.parentScope = parentScope;
   }
 
+  undefine(property) {
+    delete this.self[property]
+  }
+
   get(proprety) {
     return this.self[proprety];
   }
@@ -41,19 +45,6 @@ class Scope {
 }
 const globalScope = new Scope("GlobalScope");
 
-// const GlobalScope = new Scope("B");
-// const LocalScope = new Scope("FD");
-// const SiblingLocalScope = new Scope("SC");
-// const SubLocalScope = new Scope("SL");
-// const SiblingSubLocalScope = new Scope("SL");
-
-// LocalScope.appendScope(SubLocalScope);
-// SiblingLocalScope.appendScope(SiblingSubLocalScope);
-// GlobalScope.appendScope(LocalScope);
-// GlobalScope.appendScope(SiblingLocalScope);
-// GlobalScope.define("Lacheve", "Goat");
-
-// console.log(SiblingLocalScope.strictSearch("Lacheve"));
 module.exports = {
   Scope,
   globalScope

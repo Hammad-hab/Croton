@@ -1,0 +1,3 @@
+define(writeFile |File write|)
+writeFile("./examples.txt", "Hi! I'm just sample text and I have been modified")
+<parserlog Successfully-wrote-to-examples.txt>

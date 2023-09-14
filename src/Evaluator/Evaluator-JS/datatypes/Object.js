@@ -15,7 +15,7 @@ class Object {
   constructor(value, name, type, ...args) {
     this.value = value;
     this.name = name;
-    this.type = type;
+    this._type = type;
   }
 
   repersent() {
@@ -27,8 +27,15 @@ class Object {
       return Object.TRUE;
     }
   }
+  unsafeRepersentation() {
+    if (this._type === "String"){
+      // console.log(`"${this.value}"`)
+      return `"${this.value}"`
+    }
+    else return this.repersent()
+  }
   type() {
-    return this.type
+    return this._type
   }
   greaterThan() {}
   lessThan() {}

@@ -1,0 +1,2 @@
+define(ArrayOne Array(1 2 "Hello" 4))
+println(|ArrayOne 2|)

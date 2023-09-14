@@ -1,0 +1,3 @@
+define(readFile |File read|) # Copying the method as Objects are immutable
+define(examples-txt readFile("./example.txt"))
+println(examples-txt)

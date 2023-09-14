@@ -16,8 +16,8 @@ const PREPROCESSORZ = {
         console.log(value)
     },
     include: (File="") => {
-        if ('"' in File) File = File.replaceAll('"', "")
-        if ("'" in File) File = File.replaceAll("'", "")
+        if (File.includes('"')) File = File.replaceAll('"', "")
+        if (File.includes('"')) File = File.replaceAll("'", "")
         try {
             var file = tokenize(fs.readFileSync(File, "utf-8"))
         } catch (e) {

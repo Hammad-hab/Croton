@@ -1,1 +1,1 @@
-println("Hello World!") # println is executed by the evaluator so it has to be evaluated before it can be executed
+println("Hello World")

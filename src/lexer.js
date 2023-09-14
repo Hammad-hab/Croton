@@ -1,5 +1,8 @@
 const { Exception } = require("./exceptionUtility");
 function tokenize(string = "") {
+  // if (";" in string) {
+  //    string = string.replaceAll(";", "\n")
+  // }
   const tk = [];
   string = string += "\n";
   let cursor = 0;
@@ -114,13 +117,13 @@ function tokenize(string = "") {
 
     if (character === "'" || character === '"') {
       let character = string[(cursor += 1)];
-      let content = "";
+      let content = String.raw``;
       while (character != '"') {
         character = string[cursor];
         content += character;
         cursor += 1;
       }
-      // cursor += 1
+      
       tk.push({
         type: "String",
         value: content.slice(0, content.length - 1),
@@ -131,7 +134,7 @@ function tokenize(string = "") {
 
 
 
-    if (character.match(/[A-Za-z]/)) {
+    if (character.match(/[A-Za-z]|[A-Z\-a-z0-9]|[A-z_a-z0-9]/)) {
       // Letter
       let character = string[cursor];
       let content = "";

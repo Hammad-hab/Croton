@@ -5,5 +5,5 @@
 * [ ] Loops
 * [ ] Standard Library
 * [ ] Scope
-* [ ] Function Declaration
+* [X] Function Declaration
 * [X] File import
