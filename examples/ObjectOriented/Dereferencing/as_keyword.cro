@@ -1,0 +1,8 @@
+# With Arrays
+define(MyArray Array(1 2 3 4 5 6 "Hi!"))
+|MyArray 2| as MyArray6thElement
+println(MyArray6thElement)
+
+# With Objects
+|Math Consts E| as eulersNumber
+println(eulersNumber)

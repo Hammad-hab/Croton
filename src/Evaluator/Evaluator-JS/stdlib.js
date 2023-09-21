@@ -3,6 +3,8 @@ const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
 const fs = require("fs");
 const { Exception } = require("../../exceptionUtility");
+// const { FFI } = require("bun:ffi");
+// console.log(process.fgets)
 
 const Abstract = (property, object) =>
   object instanceof Object ? object[property] : object;
@@ -12,6 +14,9 @@ const refine = (...args) => {
   }
   return args;
 };
+// const ffi = new FFI()
+// const inputlnFunction = ffi.loadFunction("./csource.so", "inputln");
+
 const reservedWords = [
   "define",
   "_createScope",
@@ -39,26 +44,73 @@ function defineSrc(name, value, scope) {
     );
   }
   value = Abstract("value", value);
+    // console.log(value)
   scope.define(name, value);
 }
-const USE = () => {
+
+const USE = (globalScope) => {
+  globalScope.used = true;
+
+  globalScope.define("if", (condition) => {
+    return {
+      public: {
+        baseCondition: condition,
+        then: (fn) => {    
+
+          let isElseCallable = true;
+          if (condition) {
+            fn();
+            isElseCallable = false;
+          }
+
+          const base = {
+            public: {
+              else: fn => {
+                if (isElseCallable) fn()
+              },
+              elseif: (condition) => {
+                return globalScope.get("if")(condition)
+              }
+            }
+          }
+          
+          return base
+        },
+      },
+    };
+  });
+
+  globalScope.define("while", (condition, callback) => {
+    while(condition) {
+      callback()
+    }
+  })
+
+  globalScope.define("True", true);
+  globalScope.define("is_equal", (v1, v2) => {
+    return Abstract("value", v1) === Abstract("value", v2);
+  });
+
+  globalScope.define("NOT", (v1) => {
+    return !Abstract("value", v1)
+  });
+
   globalScope.define("println", (...objects) => {
-    let value = "";
+    let value = ``;
     for (const arg of objects) {
       if (arg instanceof Object) {
-        const repr = arg.repersent();
+        const repr = Abstract("value", Abstract("value", arg));
         value += repr;
       } else {
-        value += String(arg);
+        value += arg.value ? String(arg.value) : String(arg);
       }
     }
     console.log(value);
   });
 
-  
   /* Mathematical Functions */
-
   globalScope.define("sum", (...args) => {
+    // console.log(args)
     return _.sum(refine(...args));
   });
   globalScope.define("subtract", (...args) => {
@@ -70,11 +122,12 @@ const USE = () => {
   globalScope.define("divide", (arg0, arg1) => {
     return _.divide(refine(arg0, arg1));
   });
-  globalScope.define("concat", (v1, v2) => {
-    const v_1 = Abstract("value", v1)
-    const v_2 = Abstract("value", v1)
-    return v_1 + v_2
+  globalScope.define("concat", (v1, v2, joinUsing = "") => {
+    const v_1 = Abstract("value", v1);
+    const v_2 = Abstract("value", v2);
+    return v_1 + Abstract("value", joinUsing) + v_2;
   });
+
   globalScope.define("CROTON", globalScope.self);
   globalScope.define("defaultEncoding", "utf-8");
   globalScope.define("Math", {
@@ -119,6 +172,10 @@ const USE = () => {
         content = Abstract("value", content);
         return fs.appendFileSync(name, content);
       },
+      // read(name)  {
+      //   name = Abstract("value", name);
+      //   const file = Bun.file(name)
+      // }
     },
   });
 
@@ -129,4 +186,6 @@ const USE = () => {
 module.exports = {
   USE,
   defineSrc,
+  Abstract,
+  refine,
 };

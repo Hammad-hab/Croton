@@ -3,22 +3,14 @@ const { Exception } = require("../../exceptionUtility");
 const { Object } = require("./datatypes/Object");
 const STD = require("./stdlib");
 const _ = require("lodash");
-STD.USE();
+
+STD.USE(globalScope);
 
 let SCOPE = globalScope;
 let scopes = {
   globalScope,
 };
-const specialVariables = [
-  "define",
-  "_createScope",
-  "_switchScope",
-  "_deleteScope",
-  "_readScope",
-  "_getScope",
-  "_appendScope",
-  "return",
-];
+const specialVariables = ["define", "return"];
 
 const specialVariablesExecuter = {
   define: function def(name, value, scope = null) {
@@ -26,27 +18,8 @@ const specialVariablesExecuter = {
     if (scope && scope instanceof Scope) s_cope = scope;
     else if (scope) s_cope = scopes[scope];
     else s_cope = SCOPE;
-
     STD.defineSrc(name, value, s_cope);
     return value;
-  },
-  _createScope: function def(name) {
-    scopes[name.value] = new Scope(name.value);
-  },
-  _switchScope: function def(name) {
-    SCOPE = scopes[name];
-  },
-  _deleteScope: function def(name) {
-    SCOPE = scopes["globalScope"];
-    delete scopes[name];
-  },
-  _appendScope: function def(name, name2) {
-    const ScopeOne = scopes[name.value];
-    const ScopeTwo = scopes[name2.value];
-    ScopeTwo.appendScope(ScopeOne);
-  },
-  _getScope: function def() {
-    return SCOPE.name;
   },
 };
 
@@ -59,37 +32,28 @@ function evaluate(parsedToken, scope, line) {
       const fn = specialVariablesExecuter[parsedToken.name];
       switch (parsedToken.name) {
         case "define":
-          parsedToken.arguments[0].type = "String"
-          parsedToken.arguments[0].value = parsedToken.arguments[0].name
+          parsedToken.arguments[0].type = "String";
+          parsedToken.arguments[0].value = parsedToken.arguments[0].name;
           return fn(
             evaluate(parsedToken.arguments[0], SCOPE),
             evaluate(parsedToken.arguments[1], SCOPE),
             parsedToken.arguments[2] ? parsedToken.arguments[2].value : null
           );
-        case "_createScope":
-        case "_switchScope":
-        case "_deleteScope":
-        case "_readScope":
-        case "_getScope":
-          const args = evaluate(parsedToken.arguments[0], SCOPE);
-          return fn(args);
-        case "_appendScope":
-          const args_ = [
-            evaluate(parsedToken.arguments[0], SCOPE),
-            evaluate(parsedToken.arguments[1], SCOPE),
-          ];
-          return fn(...args_);
         default:
           break;
       }
     }
+
     if (parsedToken.type === "Function") {
-      const fn = scope.strictSearch(parsedToken.name);
+      const fn = SCOPE.strictSearch(parsedToken.name);
+
       parsedToken.arguments.forEach((v, i) => {
-        parsedToken.arguments[i] = evaluate(v, scope, line);
+        parsedToken.arguments[i] = evaluate(v, SCOPE, line);
       });
       if (fn) {
-        return fn(...parsedToken.arguments);
+        if (fn instanceof Object)
+           return fn.value(...parsedToken.arguments);
+        else return fn(...parsedToken.arguments)
       } else {
         new Exception(line, `Undefined function ${parsedToken.name}.`).throw();
       }
@@ -109,48 +73,67 @@ function evaluate(parsedToken, scope, line) {
             const argumentIndex = parseInt(
               parsedToken.contents[generic + 3].name.replace("arg", "")
             );
-            if (!args[argumentIndex]) new Exception(line, `Function ${parsedToken.name} expected ${argumentIndex + 1} argument${argumentIndex + 1 > 1 ? "s" : ""}, got ${args.length} instead`).throw()
-            SCOPE.define(name, args[argumentIndex].value);
-            delete parsedToken.contents[generic];
-            delete parsedToken.contents[generic + 1];
-            delete parsedToken.contents[generic + 2];
-            delete parsedToken.contents[generic + 3];
+            if (!args[argumentIndex])
+              new Exception(
+                line,
+                `Function ${parsedToken.name} expected ${
+                  argumentIndex + 1
+                } argument${argumentIndex + 1 > 1 ? "s" : ""}, got ${
+                  args.length
+                } instead`
+              ).throw();
+            SCOPE.define(name, STD.Abstract("value", args[argumentIndex]));
+            parsedToken.contents[generic] = null
+            parsedToken.contents[generic + 1] = null
+            parsedToken.contents[generic + 2] = null
+            parsedToken.contents[generic + 3] = null
           } else {
             validContents.push(content);
           }
         }
 
-       return SpawnEvaluator(validContents, SCOPE, true);
+        return SpawnEvaluator(validContents, SCOPE, true);
       });
       return fn;
     }
 
-    if (parsedToken.type === "Identifier") {
-      const obj = SCOPE.strictSearch(parsedToken.name);
-      if (!obj)
-        new Exception(
-          "line " + line,
-          `NULL Reference to Identifier ${parsedToken.name}`
-        ).throw();
-      return new Object(obj, parsedToken.name, parsedToken.type);
-    }
     if (parsedToken.type === "ObjectAccessPoint") {
       const baseAccessor = parsedToken.accessors[0];
+
       parsedToken.accessors.shift();
-      const object = scope.strictSearch(baseAccessor.name);
-      let target;
-      if (Array.isArray(object)) {
-         target = object
+      // console.log("Res", evaluate(baseAccessor, SCOPE, line))
+      let object;
+      if (baseAccessor.type !== "Function") {
+        
+        object = scope.strictSearch(baseAccessor.name);
       } else {
-         target = object["public"];
+        object = evaluate(baseAccessor, SCOPE, line);
+        if (!("public" in object) && "value" in object) {
+          object = object["value"]
+        }
+        for (const key in object["public"]) {
+          object["public"][key] = STD.Abstract("value", object["public"][key]);
+        }
       }
+      // console.log(object)
+
+
+      let target = 0;
+      if (Array.isArray(object)) {
+        target = object;
+      } else {
+        // console.log(object)
+        // if ("value" in object) object = object["value"]
+        target = object["public"];
+      }
+      // console.log(target)
       if (!target)
         new Exception(
           "line " + line,
           `NULL Reference to Identifier ${
             baseAccessor.name
           } When trying to access ${
-            parsedToken.accessors[parsedToken.accessors.length - 1].name
+            parsedToken?.accessors[parsedToken.accessors.length - 1]?.name
           }`
         ).throw();
       for (let acc of parsedToken.accessors) {
@@ -175,6 +158,15 @@ function evaluate(parsedToken, scope, line) {
                 parsedToken.accessors[parsedToken.accessors.length - 1].name
               }`
             ).throw();
+          if (acc.type === "Function") {
+              target = target[acc.name]()
+              if (!target) target = 'FN_CALL_NULL'
+              if (target["value"] && target["value"]["public"]) {
+                 target = target["value"]["public"]
+              }
+
+              continue
+          }
           target = target[acc.value];
         }
       }
@@ -192,13 +184,32 @@ function evaluate(parsedToken, scope, line) {
       return new Object(target, Object.UNDEF, "Identifier");
     }
 
+    if (parsedToken.type === "ObjectDeclaration") {
+      const obj = {};
+      for (const property of parsedToken.properties) {
+        obj[property[0]] = evaluate(property[1], SCOPE, line);
+      }
+      SCOPE.define(parsedToken.name, {
+        public: obj,
+      });
+      // console.log(SCOPE.strictSearch(parsedToken.name))
+    }
+
+    if (parsedToken.type === "Identifier") {
+      const obj = SCOPE.strictSearch(parsedToken.name);
+      if (!obj && typeof obj !== "number" && obj !== 0)
+        new Exception(
+          "line " + line,
+          `NULL Reference to Identifier ${parsedToken.name}`
+        ).throw();
+      if (typeof obj !== "function")
+        return new Object(obj, parsedToken.name, parsedToken.type);
+      else return obj;
+    }
+
     if (parsedToken) {
-      let value = parsedToken.value
-      const object = new Object(
-       value,
-        Object.UNDEF,
-        parsedToken.type
-      );
+      let value = parsedToken.value;
+      const object = new Object(value, Object.UNDEF, parsedToken.type);
       return object;
     }
   }
@@ -210,16 +221,86 @@ function SpawnEvaluator(
   isFunctionEvaluation = false,
   callback = null
 ) {
+  let lFunctionRetn;
   let line = 1;
-  let Scope = SCOPE;
 
   for (const parsedToken of parsedTokens) {
-    if (parsedToken && parsedToken.type === "Identifier" && parsedToken.name === "return") {
+    if (!parsedToken) continue
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name === "return" || parsedToken.name === "returnend"
+    ) {
       const nextToken = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
-      if (!nextToken) return Object.UNDEF
-      return evaluate(nextToken, SCOPE)
+      if (!nextToken) return Object.UNDEF;
+      const output =  evaluate(nextToken, SCOPE);
+      if (parsedToken.name === "returnend") scopes[SCOPE.name] = null
+      return output
     }
-    evaluate(parsedToken, Scope, line);
+
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name === "block"
+    ) {
+      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+      let scope;
+      if (name in scopes) {
+        SCOPE = scopes[name];
+        if (!SCOPE.used) STD.USE(SCOPE);
+      } else {
+        scope = new Scope(name);
+        scopes[name] = scope;
+        SCOPE = scope;
+        STD.USE(SCOPE);
+      }
+      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+      continue;
+    }
+
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name === "end"
+    ) {
+      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+      if (name === "globalScope") {
+        require("../../Preprocessers/index").PREPROCESSORZ.abort(
+          "GlobalScope was deleted, the interpreter could not retreat to another base scope"
+        );
+      }
+      if (name in scopes) {
+         scopes[name] = null;
+      }
+      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+      continue;
+    }
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name === "append"
+    ) {
+      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+
+      if (name in scopes) {
+        scopes[name].appendScope(SCOPE);
+      }
+      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+      continue;
+    }
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name === "as"
+    ) {
+      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].name;
+    
+      SCOPE.define(name, STD.Abstract("value", lFunctionRetn))
+      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null
+      // parsedToken
+      continue;
+    }
+    lFunctionRetn = evaluate(parsedToken, SCOPE, line);
     line += 1;
   }
   if (callback) callback();

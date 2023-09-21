@@ -1,12 +1,16 @@
 const {Exception} = require("../exceptionUtility.js")
-const {IdentifierParse, FunctionParse, VariableDeclarationParse,FunctionDeclarationParse, ObjectAccessor} = require("../Parser/")
+const {IdentifierParse, FunctionParse, VariableDeclarationParse,FunctionDeclarationParse, ObjectParse, StatementParse} = require("../Parser/")
 const PR_AV_EXTENSIONS = {
     FunctionDeclarationParse,
     VariableDeclarationParse,
     FunctionParse,
     IdentifierParse,
+    StatementParse,
+    ObjectParse
 }
 let PR_EN_EXTENSIONS = {
+    ObjectParse,
+    // StatementParse,
     FunctionDeclarationParse,
     FunctionParse,
     IdentifierParse,
@@ -29,7 +33,7 @@ function disable(target) {
         PR_EN_EXTENSIONS = {}
         return 0
     }
-    delete PR_EN_EXTENSIONS[target]
+    PR_EN_EXTENSIONS[target] = null
     return 0
 }
 module.exports = {

@@ -1,8 +1,0 @@
-#!/Users/hammad/.bun/bin/bun
-
-let { argv } = require("process");
-const { SpawnFileBasedExecuter } = require("./src/index");
-argv = argv.slice(2, argv.length);
-const file = argv[0];
-if (file) await SpawnFileBasedExecuter(file);
-else console.log("Error, source file not specified.\nSyntax:\n\tcrotonc [file_name]")

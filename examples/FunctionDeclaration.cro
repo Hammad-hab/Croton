@@ -3,7 +3,7 @@ declare Whats_your_name_and_age {
     Argument age as arg1
     
     println(name " is " age " years old")
-    return concat(name " is " age " years old")
+    return
 }
-
 Whats_your_name_and_age("Hammad" 14)
+

@@ -1,6 +1,6 @@
 const { PREPROCESSORZ, PR_EN_EXTENSIONS } = require("./Preprocessers/index");
 const { tokenize } = require("./lexer");
-const ObjectAccessor = require("./Parser/ObjectAccessor")
+const ObjectAccessor = require("./Parser/ObjectAccessor");
 
 /**
  *
@@ -14,10 +14,14 @@ function parse(tokens_array) {
   let Depth = 0;
   for (let index = 0; index < cachedLength; ) {
     const token = tokens_array[index];
+    if (!token) {
+      index += 1;
+      continue;
+    }
     if (token.type === "Preprocesser") {
-      data = PREPROCESSORZ[token.name](token.target, token.operation);
+      let data = PREPROCESSORZ[token.name](token.target, token.operation);
       if (data) {
-        AST.push(...parse(data))
+        AST.push(...parse(data));
       }
       index += 1;
       continue;
@@ -55,7 +59,6 @@ function parse(tokens_array) {
      * percisely why this part is a bit abstract.
      */
 
- 
     if (token.type === "Name") {
       for (const key in PR_EN_EXTENSIONS) {
         if (PR_EN_EXTENSIONS[key]) {
@@ -74,17 +77,16 @@ function parse(tokens_array) {
     }
 
     if (token.type === "Symbol") {
-      data = ObjectAccessor(token, tokens_array, index, parse)
+      let data = ObjectAccessor(token, tokens_array, index, parse);
       if (data) {
-         AST.push(data)
-         index += data.length
+        AST.push(data);
+        index += data.length;
       }
+      continue;
     }
-
   }
   return AST;
 }
-
 module.exports = {
   parse,
 };

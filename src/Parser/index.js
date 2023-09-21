@@ -3,6 +3,8 @@ const functionParse = require("./FunctionParse")
 const ObjectAccessor = require("./ObjectAccessor")
 const VariableDeclarationParse = require("./VariableDeclarationParse")
 const FunctionDeclarationParse = require("./FunctionDeclarationParse")
+const ObjectParse = require("./ObjectParse")
+const StatementParse = require("./StatementParse")
 
 
 module.exports = {
@@ -10,5 +12,7 @@ module.exports = {
     FunctionParse: functionParse,
     VariableDeclarationParse,
     FunctionDeclarationParse,
-    ObjectAccessor
+    ObjectAccessor,
+    ObjectParse,
+    StatementParse
 }

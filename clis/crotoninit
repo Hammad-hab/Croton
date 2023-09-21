@@ -1,0 +1,20 @@
+#!/Users/hammad/.bun/bin/bun
+let { argv } = require("process");
+let os = require("os")
+const fs = require('fs-extra')
+argv = argv.slice(2, argv.length);
+const file = argv[0];
+if (file) {
+    fs.mkdirSync(`./${file}`)
+    // fs.mkdirSync()
+    fs.mkdirSync(`./${file}/src`)
+    fs.writeFileSync(`./${file}/main.cro`, `<include "./src/app.cro">\nblock "Application"\n\t__fn__()`)
+    fs.writeFileSync(`./${file}/src/app.cro`, `block "Application"\n\t# Main Block\n\tdeclare __fn__ {\n\t\tprintln("Hello From Crotoninit")\n\t}`)
+    console.log(`Successfully created new project ${file}`)
+    fs.copy("lib", `./${file}/lib`)
+  } else {
+    console.log(
+      "Error, project name not specified.\nSyntax:\n\tcrotoninit [project_name]"
+    );
+  }
+  

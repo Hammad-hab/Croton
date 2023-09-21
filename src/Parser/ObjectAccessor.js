@@ -7,7 +7,8 @@ module.exports = function ObjectAccessPoint(token, tokens_array, index, parse) {
       type: "",
       value: "",
     };
-    accessors = [];
+    let accessors = [];
+    // console.log(accessors)
     const remainingArray = tokens_array.slice(generic + 1, tokens_array.length);
     //   console.log(remainingArray)
     while (character.type !== "Symbol" && character.value !== "|") {

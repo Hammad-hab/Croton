@@ -12,6 +12,7 @@ class Object {
     }
   };
 
+
   constructor(value, name, type, ...args) {
     this.value = value;
     this.name = name;

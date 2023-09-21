@@ -1,0 +1,11 @@
+Object AboutMe {
+    MyName "Lord Tennison"
+    MyTitle "Lord"
+    MyAge 89
+    SomeOtherPropertyThatShouldntExist 12312214123
+}
+
+# Aliasing Property
+|AboutMe MyName| as ExternalName
+|AboutMe MyTitle| as ExternalTitle
+|AboutMe MyAge| as ExternalAge

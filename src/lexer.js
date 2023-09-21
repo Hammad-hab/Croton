@@ -1,4 +1,6 @@
 const { Exception } = require("./exceptionUtility");
+const { replaceASCIIEscapeSequences,escapeSpecialCharacters } = require("./utils");
+
 function tokenize(string = "") {
   // if (";" in string) {
   //    string = string.replaceAll(";", "\n")
@@ -117,16 +119,23 @@ function tokenize(string = "") {
 
     if (character === "'" || character === '"') {
       let character = string[(cursor += 1)];
-      let content = String.raw``;
+      let content = ``;
       while (character != '"') {
         character = string[cursor];
+
         content += character;
         cursor += 1;
       }
+      let value;
+      // try {
+      //   value = JSON.parse(`"${content.slice(0, content.length - 1)}"`)
+      // } catch { 
+        value = content.slice(0, content.length - 1)
+      // }
       
       tk.push({
         type: "String",
-        value: content.slice(0, content.length - 1),
+        value: value,
         position: cursor,
       });
       continue;
@@ -172,3 +181,4 @@ function tokenize(string = "") {
 module.exports = {
   tokenize,
 };
+// require()
