@@ -9,12 +9,16 @@
   "dependencies": {
     "@babel/parser": "^7.22.5",
     "babel": "^6.23.0",
+    "cmake-js": "^7.2.1",
+    "ffi": "^2.3.0",
     "fs-extra": "^11.1.1",
     "i": "^0.3.7",
     "inquirer": "^9.2.11",
     "lodash": "^4.17.21",
+    "node-gyp": "^9.4.0",
     "prompt-sync": "^4.2.0",
     "readline-sync": "^1.4.10",
+    "sbffi": "^1.0.4",
     "supports-color": "^9.4.0",
     "toml": "^3.0.0"
   }

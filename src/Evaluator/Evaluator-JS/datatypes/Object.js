@@ -17,6 +17,8 @@ class Object {
     this.value = value;
     this.name = name;
     this._type = type;
+    this.strong = false;
+    this.masterSCOPEID = null
   }
 
   repersent() {
@@ -30,7 +32,6 @@ class Object {
   }
   unsafeRepersentation() {
     if (this._type === "String"){
-      // console.log(`"${this.value}"`)
       return `"${this.value}"`
     }
     else return this.repersent()

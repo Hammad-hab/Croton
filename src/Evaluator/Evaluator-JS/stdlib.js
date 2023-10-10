@@ -1,11 +1,13 @@
+// const _USING_BUN = true;
+
 const { globalScope } = require("./scope");
 const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
 const fs = require("fs");
 const { Exception } = require("../../exceptionUtility");
-// const { FFI } = require("bun:ffi");
-// console.log(process.fgets)
-
+// if (!_USING_BUN) {
+//   const inputln = require("readline-sync");
+// }
 const Abstract = (property, object) =>
   object instanceof Object ? object[property] : object;
 const refine = (...args) => {
@@ -14,8 +16,6 @@ const refine = (...args) => {
   }
   return args;
 };
-// const ffi = new FFI()
-// const inputlnFunction = ffi.loadFunction("./csource.so", "inputln");
 
 const reservedWords = [
   "define",
@@ -37,6 +37,16 @@ const reservedWords = [
 
 function defineSrc(name, value, scope) {
   name = Abstract(name.type === "Identifier" ? "name" : "value", name);
+  if (
+    scope.self[name] &&
+    scope.self["name"] instanceof Object &&
+    scope.self["name"].strong === true
+  ) {
+    new Exception(
+      0,
+      `Use Aliasing Operator 'as' to modify Strong variables: <value> as ${name}. Please note that Strong variables can only be modified whence they were created.`
+    ).throw();
+  }
   if (name in reservedWords) {
     new Exception(
       "_",
@@ -44,19 +54,16 @@ function defineSrc(name, value, scope) {
     );
   }
   value = Abstract("value", value);
-    // console.log(value)
   scope.define(name, value);
 }
 
 const USE = (globalScope) => {
   globalScope.used = true;
-
   globalScope.define("if", (condition) => {
     return {
       public: {
         baseCondition: condition,
-        then: (fn) => {    
-
+        then: (fn) => {
           let isElseCallable = true;
           if (condition) {
             fn();
@@ -65,39 +72,58 @@ const USE = (globalScope) => {
 
           const base = {
             public: {
-              else: fn => {
-                if (isElseCallable) fn()
+              else: (fn) => {
+                if (isElseCallable) fn();
               },
               elseif: (condition) => {
-                return globalScope.get("if")(condition)
-              }
-            }
-          }
-          
-          return base
+                return globalScope.get("if")(condition);
+              },
+            },
+          };
+
+          return base;
         },
       },
     };
   });
 
-  globalScope.define("while", (condition, callback) => {
-    while(condition) {
-      callback()
+  globalScope.define("foreach", (array, callback) => {
+    array = Abstract("value", array);
+    if (Array.isArray(array)) {
+      array = refine(...array);
     }
-  })
+    let i = 0;
+    for (let element of array) {
+      callback(element);
+      i += 1;
+    }
+  });
 
   globalScope.define("True", true);
   globalScope.define("is_equal", (v1, v2) => {
     return Abstract("value", v1) === Abstract("value", v2);
   });
+  globalScope.define("is_greater", (v1, v2) => {
+    return Abstract("value", v1) > Abstract("value", v2);
+  });
+  globalScope.define("is_less", (v1, v2) => {
+    return Abstract("value", v1) < Abstract("value", v2);
+  });
+  globalScope.define("is_less_eq", (v1, v2) => {
+    return Abstract("value", v1) <= Abstract("value", v2);
+  });
+  globalScope.define("is_greater_eq", (v1, v2) => {
+    return Abstract("value", v1) >= Abstract("value", v2);
+  });
 
   globalScope.define("NOT", (v1) => {
-    return !Abstract("value", v1)
+    return !Abstract("value", v1);
   });
 
   globalScope.define("println", (...objects) => {
     let value = ``;
     for (const arg of objects) {
+      if (!arg) continue
       if (arg instanceof Object) {
         const repr = Abstract("value", Abstract("value", arg));
         value += repr;
@@ -105,12 +131,17 @@ const USE = (globalScope) => {
         value += arg.value ? String(arg.value) : String(arg);
       }
     }
+
     console.log(value);
   });
+  // if (!_USING_BUN) {
+  //   globalScope.define("inputln", (prompt) => {
+  //     return inputln.question(Abstract("value", prompt));
+  //   });
+  // }
 
   /* Mathematical Functions */
   globalScope.define("sum", (...args) => {
-    // console.log(args)
     return _.sum(refine(...args));
   });
   globalScope.define("subtract", (...args) => {
@@ -122,14 +153,16 @@ const USE = (globalScope) => {
   globalScope.define("divide", (arg0, arg1) => {
     return _.divide(refine(arg0, arg1));
   });
+  globalScope.define("increment", (name, arg0 = 1) => {
+    globalScope.define(Abstract("name", name), Abstract("value", arg0));
+    return;
+  });
   globalScope.define("concat", (v1, v2, joinUsing = "") => {
     const v_1 = Abstract("value", v1);
     const v_2 = Abstract("value", v2);
     return v_1 + Abstract("value", joinUsing) + v_2;
   });
 
-  globalScope.define("CROTON", globalScope.self);
-  globalScope.define("defaultEncoding", "utf-8");
   globalScope.define("Math", {
     public: {
       Trig: {
@@ -146,6 +179,7 @@ const USE = (globalScope) => {
           return Math.tan(value);
         },
       },
+      JSMath: Math,
       Consts: {
         PI: Math.PI,
         pi: 3.142,
@@ -155,29 +189,25 @@ const USE = (globalScope) => {
     },
   });
 
-  globalScope.define("File", {
-    public: {
-      read: (name) => {
-        name = Abstract("value", name);
-        return fs.readFileSync(name, globalScope.get("defaultEncoding"));
-      },
-      write: (name, content) => {
-        name = Abstract("value", name);
-        content = Abstract("value", content);
+  // globalScope.define("File", {
+  //   public: {
+  //     read: (name) => {
+  //       name = Abstract("value", name);
+  //       return fs.readFileSync(name, globalScope.get("defaultEncoding"));
+  //     },
+  //     write: (name, content) => {
+  //       name = Abstract("value", name);
+  //       content = Abstract("value", content);
 
-        return fs.writeFileSync(name, content);
-      },
-      append: (name, content) => {
-        name = Abstract("value", name);
-        content = Abstract("value", content);
-        return fs.appendFileSync(name, content);
-      },
-      // read(name)  {
-      //   name = Abstract("value", name);
-      //   const file = Bun.file(name)
-      // }
-    },
-  });
+  //       return fs.writeFileSync(name, content);
+  //     },
+  //     append: (name, content) => {
+  //       name = Abstract("value", name);
+  //       content = Abstract("value", content);
+  //       return fs.appendFileSync(name, content);
+  //     },
+  //   },
+  // });
 
   globalScope.define("Array", (...args) => {
     return args;

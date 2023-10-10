@@ -8,9 +8,7 @@ module.exports = function ObjectAccessPoint(token, tokens_array, index, parse) {
       value: "",
     };
     let accessors = [];
-    // console.log(accessors)
     const remainingArray = tokens_array.slice(generic + 1, tokens_array.length);
-    //   console.log(remainingArray)
     while (character.type !== "Symbol" && character.value !== "|") {
       //   if (character.type !== "String" && character.type !== "Name") return new Exception(index + length, `Expected Object AccessPoint to be of type String or Name, got ${character.type} instead.`).throw()
       if (character.value === "|") break;

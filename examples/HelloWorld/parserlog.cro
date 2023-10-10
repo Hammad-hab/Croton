@@ -1,5 +1,5 @@
 <parserlog Hello-World> # parserlog is a special preprocessor that prints messages to the standard output
 # Essentially the parserlog does NOT need to be evaluated to be executed. As its name suggests, it is executed
-immediatly during parsing. This allows it to execute regardless of main-thread blockage #
+# immediatly during parsing. This allows it to execute regardless of main-thread blockage #
 # The parserlog syntax is a bit peculiar, it does not take strings. Instead it takes words seperated by hypens
-which it considers as whitespaces. #
+# which it considers as whitespaces. #

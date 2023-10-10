@@ -1,9 +1,7 @@
 declare Whats_your_name_and_age {
-    Argument name as arg0
-    Argument age as arg1
+    Arg0 as name
+    Arg1 as age
     
     println(name " is " age " years old")
-    return
+    # return
 }
-Whats_your_name_and_age("Hammad" 14)
-

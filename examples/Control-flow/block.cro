@@ -1,0 +1,11 @@
+declare scope {
+    block "callback-unique-scope"
+    parent "globalScope"
+
+        Arg0 as name
+        println(name)
+
+    returnend 0
+}
+
+scope("Hammad Ali Butt")

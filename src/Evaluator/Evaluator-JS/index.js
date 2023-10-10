@@ -1,132 +1,134 @@
 const { globalScope, Scope } = require("./scope");
 const { Exception } = require("../../exceptionUtility");
 const { Object } = require("./datatypes/Object");
+const { Function } = require("./datatypes/Function");
+
 const STD = require("./stdlib");
-const _ = require("lodash");
-
 STD.USE(globalScope);
-
 let SCOPE = globalScope;
-let scopes = {
+const scopes = {
   globalScope,
 };
-const specialVariables = ["define", "return"];
+class Evaluator {
+  SCOPE = globalScope;
+  scopes = { globalScope };
+  specialVariables = ["define", "return"];
+  specialVariablesAllowedExecution = ["return"];
+  specialVariablesExecuter = {
+    define: function def(name, value, scope = null) {
+      let s_cope;
+      if (scope && scope instanceof Scope) s_cope = scope;
+      else if (scope) s_cope = this.scopes[scope];
+      else s_cope = SCOPE;
+      if (value instanceof Object) value.owner = s_cope;
 
-const specialVariablesExecuter = {
-  define: function def(name, value, scope = null) {
-    let s_cope;
-    if (scope && scope instanceof Scope) s_cope = scope;
-    else if (scope) s_cope = scopes[scope];
-    else s_cope = SCOPE;
-    STD.defineSrc(name, value, s_cope);
-    return value;
-  },
-};
+      STD.defineSrc(name, value, s_cope);
+      return value;
+    },
+  };
 
-function evaluate(parsedToken, scope, line) {
-  if (parsedToken) {
-    if (
-      parsedToken.type === "Function" &&
-      specialVariables.indexOf(parsedToken.name) !== -1
-    ) {
-      const fn = specialVariablesExecuter[parsedToken.name];
+  evaluateFunction(parsedToken, line = 0) {
+    if (this.specialVariables.indexOf(parsedToken.name) !== -1) {
+      const fn = this.specialVariablesExecuter[parsedToken.name];
       switch (parsedToken.name) {
         case "define":
-          parsedToken.arguments[0].type = "String";
-          parsedToken.arguments[0].value = parsedToken.arguments[0].name;
+          const args = parsedToken.arguments;
+          args[0].type = "String";
+          args[0].value = parsedToken.arguments[0].name;
           return fn(
-            evaluate(parsedToken.arguments[0], SCOPE),
-            evaluate(parsedToken.arguments[1], SCOPE),
-            parsedToken.arguments[2] ? parsedToken.arguments[2].value : null
+            this.__call__(args[0], Evaluator.SCOPE),
+            this.__call__(args[1], Evaluator.SCOPE),
+            args[2] ? args[2].value : null
           );
         default:
           break;
       }
     }
+    let fn;
+    if (
+      this.SCOPE.name === "GlobalScope" &&
+      parsedToken.name in this.SCOPE.self
+    ) {
+      fn = this.SCOPE.self[parsedToken.name];
+    } else {
+      fn = this.SCOPE.strictSearch(parsedToken.name);
+    }
+    const _arguments = [];
+    parsedToken.arguments.forEach((v, i) => {
+      _arguments.push(this.__call__(v, this.SCOPE, line));
+    });
 
-    if (parsedToken.type === "Function") {
-      const fn = SCOPE.strictSearch(parsedToken.name);
+    if (fn) {
+      let data;
+      if (fn instanceof Object) data = fn.value(..._arguments);
+      else data = fn(..._arguments);
+      return data;
+    } else {
+      new Exception(
+        line,
+        `Unknown reference to Funtion ${parsedToken.name} which is non-existant`
+      ).throw();
+    }
+  }
 
-      parsedToken.arguments.forEach((v, i) => {
-        parsedToken.arguments[i] = evaluate(v, SCOPE, line);
-      });
-      if (fn) {
-        if (fn instanceof Object)
-           return fn.value(...parsedToken.arguments);
-        else return fn(...parsedToken.arguments)
-      } else {
-        new Exception(line, `Undefined function ${parsedToken.name}.`).throw();
-      }
+  evaluateIdentifier(parsedToken, line) {
+    const obj = SCOPE.strictSearch(parsedToken.name);
+
+    if (obj instanceof Function) {
+      // Handle function call
+      return obj();
     }
 
-    if (parsedToken.type === "FunctionDeclaration") {
-      const fn = SCOPE.define(parsedToken.name, (...args) => {
-        const validContents = [];
-        for (const content of parsedToken.contents) {
-          if (
-            content &&
-            content.type === "Identifier" &&
-            content.name === "Argument"
-          ) {
-            const generic = parsedToken.contents.indexOf(content);
-            const name = parsedToken.contents[generic + 1].name;
-            const argumentIndex = parseInt(
-              parsedToken.contents[generic + 3].name.replace("arg", "")
-            );
-            if (!args[argumentIndex])
-              new Exception(
-                line,
-                `Function ${parsedToken.name} expected ${
-                  argumentIndex + 1
-                } argument${argumentIndex + 1 > 1 ? "s" : ""}, got ${
-                  args.length
-                } instead`
-              ).throw();
-            SCOPE.define(name, STD.Abstract("value", args[argumentIndex]));
-            parsedToken.contents[generic] = null
-            parsedToken.contents[generic + 1] = null
-            parsedToken.contents[generic + 2] = null
-            parsedToken.contents[generic + 3] = null
-          } else {
-            validContents.push(content);
-          }
-        }
-
-        return SpawnEvaluator(validContents, SCOPE, true);
-      });
-      return fn;
+    if (!obj && typeof obj !== "number" && obj !== 0) {
+      new Exception(
+        "line " + line,
+        `Unknown Reference to Identifier ${parsedToken.name} which is non-existent`
+      ).throw();
     }
 
+    if (obj instanceof Object === false) {
+      return new Object(obj, parsedToken.name, parsedToken.type);
+    } else {
+      return obj;
+    }
+  }
+
+  evalulateSpecialVariables(parsedToken, line) {}
+  evaluateObjectDeclaration(parsedToken, line) {
+    const obj = {};
+    for (const property of parsedToken.properties) {
+      obj[property[0]] = this.__call__(property[1], SCOPE, line);
+    }
+    SCOPE.define(parsedToken.name, {
+      public: obj,
+      Mut: parsedToken.isMutable,
+    });
+  }
+
+  evaluateObjectAccessors(parsedToken, line) {
     if (parsedToken.type === "ObjectAccessPoint") {
       const baseAccessor = parsedToken.accessors[0];
+      const fsElement = parsedToken.accessors.shift();
 
-      parsedToken.accessors.shift();
-      // console.log("Res", evaluate(baseAccessor, SCOPE, line))
       let object;
       if (baseAccessor.type !== "Function") {
-        
-        object = scope.strictSearch(baseAccessor.name);
+        object = this.SCOPE.strictSearch(baseAccessor.name);
       } else {
-        object = evaluate(baseAccessor, SCOPE, line);
+        object = this.__call__(baseAccessor, SCOPE, line);
         if (!("public" in object) && "value" in object) {
-          object = object["value"]
+          object = object["value"];
         }
         for (const key in object["public"]) {
           object["public"][key] = STD.Abstract("value", object["public"][key]);
         }
       }
-      // console.log(object)
-
 
       let target = 0;
       if (Array.isArray(object)) {
         target = object;
       } else {
-        // console.log(object)
-        // if ("value" in object) object = object["value"]
         target = object["public"];
       }
-      // console.log(target)
       if (!target)
         new Exception(
           "line " + line,
@@ -136,7 +138,7 @@ function evaluate(parsedToken, scope, line) {
             parsedToken?.accessors[parsedToken.accessors.length - 1]?.name
           }`
         ).throw();
-      for (let acc of parsedToken.accessors) {
+        for (let acc of parsedToken.accessors) {
         if (!target)
           new Exception(
             "line " + line,
@@ -147,6 +149,7 @@ function evaluate(parsedToken, scope, line) {
             }`
           ).throw();
         if (acc.type === "Identifier") {
+
           target = target[acc.name];
         } else {
           if (!target)
@@ -159,13 +162,17 @@ function evaluate(parsedToken, scope, line) {
               }`
             ).throw();
           if (acc.type === "Function") {
-              target = target[acc.name]()
-              if (!target) target = 'FN_CALL_NULL'
-              if (target["value"] && target["value"]["public"]) {
-                 target = target["value"]["public"]
-              }
-
+            target = target[acc.name]();
+            if (!target) {
+              target = {};
               continue
+            }
+            if (target["value"] && target["value"]["public"]) {
+              target = target["value"]["public"];
+              continue
+            }
+
+            continue;
           }
           target = target[acc.value];
         }
@@ -180,31 +187,45 @@ function evaluate(parsedToken, scope, line) {
             parsedToken.accessors[parsedToken.accessors.length - 1].name
           }`
         ).throw();
-
+      parsedToken.accessors = [fsElement, ...parsedToken.accessors];
+      // if (!target === "FN_CALL_NULL")
       return new Object(target, Object.UNDEF, "Identifier");
     }
+  }
 
-    if (parsedToken.type === "ObjectDeclaration") {
-      const obj = {};
-      for (const property of parsedToken.properties) {
-        obj[property[0]] = evaluate(property[1], SCOPE, line);
-      }
-      SCOPE.define(parsedToken.name, {
-        public: obj,
-      });
-      // console.log(SCOPE.strictSearch(parsedToken.name))
+  __call__(parsedToken, line) {
+    if (!parsedToken) return;
+
+    if (
+      parsedToken &&
+      parsedToken.type === "Identifier" &&
+      parsedToken.name in this.specialVariables
+    ) {
+      return this.evalulateSpecialVariables(parsedToken, line);
+    }
+
+    if (parsedToken.type === "Function") {
+      return this.evaluateFunction(parsedToken, line);
     }
 
     if (parsedToken.type === "Identifier") {
-      const obj = SCOPE.strictSearch(parsedToken.name);
-      if (!obj && typeof obj !== "number" && obj !== 0)
-        new Exception(
-          "line " + line,
-          `NULL Reference to Identifier ${parsedToken.name}`
-        ).throw();
-      if (typeof obj !== "function")
-        return new Object(obj, parsedToken.name, parsedToken.type);
-      else return obj;
+      return this.evaluateIdentifier(parsedToken, line);
+    }
+
+    if (parsedToken.type === "ObjectDeclaration") {
+      return this.evaluateObjectDeclaration(parsedToken, line);
+    }
+
+    if (parsedToken.type === "ObjectAccessPoint") {
+      return this.evaluateObjectAccessors(parsedToken, line);
+    }
+
+    if (parsedToken.type === "FunctionDeclaration") {
+      const tmfn = new Function(parsedToken.name, 0, this.SCOPE);
+      tmfn.setToken(parsedToken);
+      tmfn.setEvaluator(this.__execute__.bind(this));
+      tmfn.def();
+      return tmfn.call.bind(tmfn);
     }
 
     if (parsedToken) {
@@ -213,100 +234,125 @@ function evaluate(parsedToken, scope, line) {
       return object;
     }
   }
-}
 
-function SpawnEvaluator(
-  parsedTokens,
-  scope = globalScope,
-  isFunctionEvaluation = false,
-  callback = null
-) {
-  let lFunctionRetn;
-  let line = 1;
-
-  for (const parsedToken of parsedTokens) {
-    if (!parsedToken) continue
-    if (
-      parsedToken &&
-      parsedToken.type === "Identifier" &&
-      parsedToken.name === "return" || parsedToken.name === "returnend"
-    ) {
-      const nextToken = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
-      if (!nextToken) return Object.UNDEF;
-      const output =  evaluate(nextToken, SCOPE);
-      if (parsedToken.name === "returnend") scopes[SCOPE.name] = null
-      return output
-    }
-
-    if (
-      parsedToken &&
-      parsedToken.type === "Identifier" &&
-      parsedToken.name === "block"
-    ) {
-      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
-      let scope;
-      if (name in scopes) {
-        SCOPE = scopes[name];
-        if (!SCOPE.used) STD.USE(SCOPE);
-      } else {
-        scope = new Scope(name);
-        scopes[name] = scope;
-        SCOPE = scope;
-        STD.USE(SCOPE);
+  __execute__(parsedTokens, SCOPE__, CALLER = "STD") {
+    if (SCOPE__) SCOPE = SCOPE__;
+    let lFunctionRetn;
+    for (let i = 0; i < parsedTokens.length; i++) {
+      const parsedToken = parsedTokens[i];
+      if (!parsedToken) continue;
+      if (
+        (parsedToken &&
+          parsedToken.type === "Identifier" &&
+          parsedToken.name === "return") ||
+        parsedToken.name === "returnend"
+      ) {
+        const nextToken = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
+        if (!nextToken) return Object.UNDEF;
+        const output = this.__call__(nextToken, SCOPE);
+        if (parsedToken.name === "returnend") {
+          delete scopes[SCOPE.name];
+          SCOPE = scopes["globalScope"];
+        }
+        return output;
       }
-      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
-      continue;
+      if (
+        parsedToken &&
+        parsedToken.type === "Identifier" &&
+        parsedToken.name === "as"
+      ) {
+        let name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
+        if (name.type === "Identifier") {
+          // console.log(name)
+          name = name.name;
+          SCOPE.define(
+            name,
+            STD.Abstract("value", STD.Abstract("value", lFunctionRetn))
+          );
+        } else if (
+          name.type === "ObjectAccessPoint" &&
+          SCOPE.get(name.accessors[0]?.name)
+        ) {
+          if (!SCOPE.get(name.accessors[0]?.name).Mut) {
+            return new Exception(
+              0,
+              "Cannot change the value of an immutable Object. To declare a mutable object, use 'Mutable' instead of 'Object'"
+            ).throw();
+          }
+          const initalObject = SCOPE.get(name.accessors[0].name);
+          let target = initalObject.public;
+          name.accessors.forEach((v, i) => {
+            if (i === 0) return;
+            if (i === name.accessors.length - 1) target[v.name] = lFunctionRetn;
+            else target = target[v.name];
+          });
+          SCOPE.define(name.accessors[0].name, initalObject);
+        }
+        parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+        continue;
+      }
+      if (
+        parsedToken &&
+        parsedToken.type === "Identifier" &&
+        parsedToken.name === "block"
+      ) {
+        const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+        let scope;
+        if (name in scopes) {
+          SCOPE = scopes[name];
+          if (SCOPE && !SCOPE.used) STD.USE(SCOPE);
+        } else {
+          scope = new Scope(name);
+          scopes[name] = scope;
+          SCOPE = scope;
+          STD.USE(SCOPE);
+        }
+        parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+        continue;
+      }
+
+      if (
+        parsedToken &&
+        parsedToken.type === "Identifier" &&
+        parsedToken.name === "end"
+      ) {
+        const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+        if (name === "globalScope") {
+          require("../../Preprocessers/index").PREPROCESSORZ.abort(
+            "GlobalScope was deleted, the interpreter could not retreat to another base scope"
+          );
+        }
+        if (name in scopes) {
+          scopes[name] = null;
+        }
+        parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+        continue;
+      }
+      if (
+        parsedToken &&
+        parsedToken.type === "Identifier" &&
+        parsedToken.name === "parent"
+      ) {
+        const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
+
+        if (name in scopes) {
+          scopes[name].appendScope(SCOPE);
+        }
+        parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+        continue;
+      }
+
+      lFunctionRetn = this.__call__(parsedToken, SCOPE, i);
     }
 
-    if (
-      parsedToken &&
-      parsedToken.type === "Identifier" &&
-      parsedToken.name === "end"
-    ) {
-      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
-      if (name === "globalScope") {
-        require("../../Preprocessers/index").PREPROCESSORZ.abort(
-          "GlobalScope was deleted, the interpreter could not retreat to another base scope"
-        );
-      }
-      if (name in scopes) {
-         scopes[name] = null;
-      }
-      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
-      continue;
-    }
-    if (
-      parsedToken &&
-      parsedToken.type === "Identifier" &&
-      parsedToken.name === "append"
-    ) {
-      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].value;
-
-      if (name in scopes) {
-        scopes[name].appendScope(SCOPE);
-      }
-      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
-      continue;
-    }
-    if (
-      parsedToken &&
-      parsedToken.type === "Identifier" &&
-      parsedToken.name === "as"
-    ) {
-      const name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1].name;
-    
-      SCOPE.define(name, STD.Abstract("value", lFunctionRetn))
-      parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null
-      // parsedToken
-      continue;
-    }
-    lFunctionRetn = evaluate(parsedToken, SCOPE, line);
-    line += 1;
+    SCOPE = globalScope;
   }
-  if (callback) callback();
 }
+
+const _evaluator = new Evaluator();
+const SpawnEvaluator = _evaluator.__execute__.bind(_evaluator);
 
 module.exports = {
-  evaluate,
   SpawnEvaluator,
+  SCOPE,
 };

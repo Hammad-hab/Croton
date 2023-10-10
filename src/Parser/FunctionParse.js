@@ -19,7 +19,6 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
   
       for (let i = nextTokenIndex + 1; i < tokens_array.length; i++) {
         const currentToken = tokens_array[i];
-        // console.log(parameterController, token.value)
         if (currentToken.value === "(") {
           parameterController++;
         } else if (currentToken.value === ")") {
@@ -35,7 +34,6 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
         parametersLength++;
       }
   
-      // console.log(parameterController)
       
       // Remove the opening and closing parentheses from parameters
       if (parameters[0].value === "(") parameters.shift();
@@ -43,12 +41,10 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
       if (parameters[parameters.length - 1].value === ")") parameters.pop();
       
       const parsedParameters = parse(parameters);
-      // console.log(parsedParameters, token.value)
       parsedParameters.forEach(element => {
         element.isArgument = true
       });
 
-      // console.log("Done!", token.value)
 
       return {
         type: "Function",

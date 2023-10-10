@@ -7,15 +7,20 @@ module.exports = function FunctionDeclarationParse(
   if (token.value === "declare") {
     const generic = tokens_array.indexOf(token);
     let copiedGenerics = generic + 1;
-    const fnName = tokens_array[copiedGenerics];
-    copiedGenerics += 1;
-    // console.log("ARRAY",tokens_array)
-    const NTOKEN = tokens_array[copiedGenerics];
-    copiedGenerics += 1;
+    let fnName = tokens_array[copiedGenerics];
+    var NTOKEN;
+    if (!fnName.type === "Symbol" && !fnName.value === "{" || fnName.type === "Name") {
+      copiedGenerics += 1;
+      NTOKEN = tokens_array[copiedGenerics];
+      copiedGenerics += 1;
+    } else if (fnName.type === "Symbol" && fnName.value === "{") {
+      NTOKEN = fnName
+      copiedGenerics += 1
+      fnName = "__lambda!"
+      // copiedGenerics += 1
+    }
     let length = 0;
-    // console.log("Parsing FunctionDeclaration", fnName.value)
-    // console.log(NTOKEN)
-    if (NTOKEN && NTOKEN.type === "Symbol" && NTOKEN.value === "{") {
+    if (NTOKEN && NTOKEN.type === "Symbol" && NTOKEN.value === "{" || NTOKEN.type) {
       let contents = [];
       let character = {
         type: "",
@@ -26,11 +31,9 @@ module.exports = function FunctionDeclarationParse(
         copiedGenerics,
         tokens_array.length
       );
-      // console.log("Made it to While Loop")
       while (length < remainingArray.length) {
         character = remainingArray[length];
-        if (bracketController === 0) break
-        // console.log(bracketController)
+        if (bracketController === 0) break;
         if (character.value === "{") bracketController += 1;
         if (character.value === "}") bracketController -= 1;
         contents.push(character);
@@ -38,12 +41,12 @@ module.exports = function FunctionDeclarationParse(
       }
       contents = contents.slice(0, contents.length - 1);
       contents = parse(contents);
-      // console.log("Parsed Function", fnName.value)
       return {
         type: "FunctionDeclaration",
         contents,
-        length: length + 3,
-        name: fnName.value,
+        length: fnName !== "__lambda!" ? length + 3 : length + 2,
+        name: fnName === "__lambda!" ? fnName : fnName.value,
+        lambda: fnName.value === "_lambda",
       };
     }
   }

@@ -9,3 +9,7 @@ Object AboutMe {
 |AboutMe MyName| as ExternalName
 |AboutMe MyTitle| as ExternalTitle
 |AboutMe MyAge| as ExternalAge
+
+println("Name: " ExternalName)
+println("Title: " ExternalTitle)
+println("Age: " ExternalAge)

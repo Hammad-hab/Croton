@@ -1,6 +1,5 @@
 module.exports = function ObjectParse(token, tokens_array, index, parse) {
-    if (token.value === "Object" || token.value === "Struct" || token.value === "Structure") {
-      // console.log("Tila")
+    if (token.value === "Object" || token.value === "Mutable") {
         const generic = tokens_array.indexOf(token);
         let copiedGenerics = generic+1
         const fnName = tokens_array[copiedGenerics];
@@ -32,6 +31,7 @@ module.exports = function ObjectParse(token, tokens_array, index, parse) {
             properties,
             length: length + 3,
             name: fnName.value,
+            isMutable: token.value === "Mutable" ? true : false
           }
         }
       }

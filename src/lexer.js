@@ -2,9 +2,6 @@ const { Exception } = require("./exceptionUtility");
 const { replaceASCIIEscapeSequences,escapeSpecialCharacters } = require("./utils");
 
 function tokenize(string = "") {
-  // if (";" in string) {
-  //    string = string.replaceAll(";", "\n")
-  // }
   const tk = [];
   string = string += "\n";
   let cursor = 0;
@@ -16,13 +13,13 @@ function tokenize(string = "") {
     }
 
     if (character === "#") {
-      let inde = cursor;
+      let index = cursor;
       let character = string[(cursor += 1)];
       let content = "";
       while (character != "#" && character != "\n") {
         if (cursor >= 10000) {
           return new Exception(
-            inde,
+            index,
             `Comment is either too long or unterminated`
           ).throw();
         }
@@ -177,6 +174,7 @@ function tokenize(string = "") {
   }
   return tk;
 }
+
 
 module.exports = {
   tokenize,

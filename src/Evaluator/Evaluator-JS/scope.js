@@ -1,3 +1,5 @@
+const { uniqueId } = require("lodash");
+
 class Scope {
   constructor(name) {
     this.name = name;
@@ -5,28 +7,31 @@ class Scope {
     this.innerScopes = [];
     this.has = (v) => this.self.hasOwnProperty(v);
     this.parentScope = null;
-    this.define("name", this.name)
+    this.id = uniqueId("ScopeID")
+    this.define("name", this.name);
   }
 
   define(proprety, value) {
     this.self[proprety] = value;
-    return this.self[proprety]
+    return this.self[proprety];
   }
 
   assignParent(parentScope) {
-    this.parentScope = parentScope;
+    if (parentScope) this.parentScope = parentScope;
   }
 
   undefine(property) {
-    delete this.self[property]
+    delete this.self[property];
   }
 
   get(proprety) {
     return this.self[proprety];
   }
   appendScope(scope) {
-    this.innerScopes.push(scope);
-    scope.assignParent(this)
+    if (scope) {
+      this.innerScopes.push(scope);
+      scope.assignParent(this);
+    }
   }
 
   strictSearch(proprety) {
@@ -47,5 +52,5 @@ const globalScope = new Scope("GlobalScope");
 
 module.exports = {
   Scope,
-  globalScope
+  globalScope,
 };

@@ -1,18 +1,18 @@
-block "Application"
+# block "Application"
     
-    define(Master "Hammad")
-    if (is_equal(Master "Hammad")) as condition
+define(Master "Hammad")
+if (is_equal(Master "Hammad")) as condition
 
-    |condition then| as then
+|condition then| as then
 
-    then(declare callback {
-        println("Hammad is the creator of the language!")
-    }) as else_container
+then(declare callback {
+    println("Hammad is the creator of the language!")
+}) as else_container
     
-    |else_container else| as else
+|else_container else| as else
 
-    else(declare callback {
-        println("Whoever it is, he is not the creator of this language")
-    })
+else(declare callback {
+    println("Whoever it is, he is not the creator of this language")
+})
 
-end "Application"
+# end "Application"
