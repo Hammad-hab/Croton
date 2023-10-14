@@ -1,0 +1,9 @@
+<include "./stdio.so" inputln-char*-char*>
+
+declare _loop {
+    inputln("croton% ") as statement
+    evaluate(statement) as return_vl
+    _loop()
+}
+
+_loop()

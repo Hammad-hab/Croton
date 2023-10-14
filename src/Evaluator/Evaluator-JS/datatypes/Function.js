@@ -59,6 +59,7 @@ class Function {
 
        this.SCOPE.define("Arg" + i, Arguments[i])
      })
+     this.SCOPE.define("_SELF_", this.call.bind(this))
       return this.evaluate(contents, this.SCOPE, "FN", Arguments);
     }
 }

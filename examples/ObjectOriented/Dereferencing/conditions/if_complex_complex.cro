@@ -1,0 +1,32 @@
+<parserlog Loading-inputln.so....>
+<include "./inputln.so" inputln-char*-char*>
+<parserlog Successfully-Loaded-inputln.so....>
+
+declare loop {
+    inputln(">>> ") as USER_INPUT
+    fix(USER_INPUT) as USER_INPUT
+	if(is_equal(USER_INPUT "clear")) as condition
+	|condition then| as then
+
+	then(declare {
+		println("User Asked to clear the screen")
+	}) as then_condition
+
+	|then_condition elseif| as elseif
+
+	elseif(is_equal(USER_INPUT "exit")) as condition
+	|condition then| as then
+	then(declare {
+		println("Goodbye!")
+	}) as then_condition
+
+	|then_condition else| as else
+
+	else(declare {
+        println("____RESTART____")
+		loop()
+	})
+	return 0
+}
+loop()
+

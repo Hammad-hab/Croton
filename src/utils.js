@@ -59,8 +59,50 @@ function replaceASCIIEscapeSequences(inputString) {
   return inputString.replace(escapePattern, (match) => escapeMap[match] || match);
 }
 
+function arrayToUint8Array(array) {
+  var buffer = new ArrayBuffer(array.length);
+  var uint8Array = new Uint8Array(buffer);
+  
+  for (var i = 0; i < array.length; i++) {
+    uint8Array[i] = array[i];
+  }
+
+  return uint8Array;
+}
+
+
+function stringToAsciiArray(inputString) {
+  var asciiArray = [];
+  for (var i = 0; i < inputString.length; i++) {
+    asciiArray.push(inputString.charCodeAt(i));
+  }
+  return asciiArray;
+}
+
+function removeCommonEscapeSequences(inputString) {
+  const escapeSequences = {
+    '\\n': '\n',  // Newline
+    '\\r': '\r',  // Carriage Return
+    '\\t': '\t',  // Horizontal Tab
+    '\\"': '"',   // Double Quote
+    '\\\'': '\'',  // Single Quote (Apostrophe)
+    '\\\\': '\\',  // Backslash
+  };
+
+  // Replace the common escape sequences with their corresponding characters
+  for (const escapeSeq in escapeSequences) {
+    const replacement = escapeSequences[escapeSeq];
+    inputString = inputString.replace(new RegExp(escapeSeq, 'g'), replacement);
+  }
+
+  return inputString;
+}
+
 
 module.exports = {
   escapeSpecialCharacters,
-  replaceASCIIEscapeSequences
+  replaceASCIIEscapeSequences,
+  stringToAsciiArray,
+  removeCommonEscapeSequences,
+  arrayToUint8Array
 }

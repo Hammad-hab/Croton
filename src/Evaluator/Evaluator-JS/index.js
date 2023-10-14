@@ -73,7 +73,6 @@ class Evaluator {
 
   evaluateIdentifier(parsedToken, line) {
     const obj = SCOPE.strictSearch(parsedToken.name);
-
     if (obj instanceof Function) {
       // Handle function call
       return obj();
@@ -87,6 +86,7 @@ class Evaluator {
     }
 
     if (obj instanceof Object === false) {
+
       return new Object(obj, parsedToken.name, parsedToken.type);
     } else {
       return obj;
@@ -261,9 +261,12 @@ class Evaluator {
         parsedToken.type === "Identifier" &&
         parsedToken.name === "as"
       ) {
+        if (!lFunctionRetn) {
+          lFunctionRetn = Object.UNDEF
+        }
         let name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
         if (name.type === "Identifier") {
-          // console.log(name)
+          
           name = name.name;
           SCOPE.define(
             name,

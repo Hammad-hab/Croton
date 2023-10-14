@@ -1,0 +1,21 @@
+<parserlog Loading-inputln.so....>
+<include "./inputln.so" inputln-char*-char*>
+<parserlog Successfully-Loaded-inputln.so....>
+
+|Math JSMath random| as random # Dereferencing Properties
+|Math JSMath floor| as floor # Dereferencing Properties
+
+define(USER_INPUT inputln(">>> "))
+if(USER_INPUT) as condition
+
+|condition then| as then
+
+then(declare {
+	println("User Entered " USER_INPUT)
+}) as then_condition
+
+|then_condition else| as else
+
+else(declare {
+	println("User did not enter anything, exiting program...")
+})

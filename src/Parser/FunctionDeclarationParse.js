@@ -9,7 +9,7 @@ module.exports = function FunctionDeclarationParse(
     let copiedGenerics = generic + 1;
     let fnName = tokens_array[copiedGenerics];
     var NTOKEN;
-    if (!fnName.type === "Symbol" && !fnName.value === "{" || fnName.type === "Name") {
+    if (!fnName || !fnName.type === "Symbol" && !fnName.value === "{" || fnName.type === "Name" ) {
       copiedGenerics += 1;
       NTOKEN = tokens_array[copiedGenerics];
       copiedGenerics += 1;

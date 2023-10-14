@@ -1,5 +1,5 @@
 const { uniqueId } = require("lodash");
-
+const {Object} = require("./datatypes/Object")
 class Scope {
   constructor(name) {
     this.name = name;
@@ -12,6 +12,7 @@ class Scope {
   }
 
   define(proprety, value) {
+    if (!value) value = Object.UNDEF
     this.self[proprety] = value;
     return this.self[proprety];
   }

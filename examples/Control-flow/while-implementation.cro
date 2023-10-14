@@ -1,0 +1,26 @@
+Mutable Container {}
+
+0 as i
+declare self{
+    
+    Arg0 as callback
+
+    if(is_less(i 10)) as condition
+    |condition then| as then
+    then(declare {
+        println(i)
+        sum(i 1) as i
+        self()
+    }) as condition
+    |condition else| as else
+    else(declare {
+        callback()
+    })
+
+    return "La Càsa dè Papel"
+} as |Container While|
+
+|Container While| as While
+While(declare {
+    println("OK")
+})

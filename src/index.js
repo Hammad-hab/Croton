@@ -16,5 +16,6 @@ const SpawnFileBasedExecuter = function (file_name) {
 
 module.exports = {
     SpawnFileBasedExecuter,
+    SpawnExecuter,
     parse,tokenize
 }

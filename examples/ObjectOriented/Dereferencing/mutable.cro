@@ -1,0 +1,14 @@
+Mutable Container {
+    inlineProperty "Hello I'm an Inline property!"
+}
+
+"Unlike Standard Objects, properties can be appended to a Mutable" as |Container message|
+declare {
+    Arg0 as msg
+    println(|Container message|)
+    println("You can also append functions onto a Mutable like any other property!")
+    println(msg)
+} as |Container method|
+
+|Container method| as method
+method("And what's more is that you can call it!")

@@ -1,9 +1,14 @@
 # TODO in Croton Interpreter
 
 * [X] Define
-* [ ] Conditions
-* [ ] Loops
+* [X] Conditions
+* [X] Loops
 * [ ] Standard Library
-* [ ] Scope
+* [X] Scope
 * [X] Function Declaration
 * [X] File import
+* [ ] Useful Error Messages
+* [ ] Complex Condtions
+* [ ] powerful FileIO
+* [ ] More User friendly C API
+* [ ] More preprocessors

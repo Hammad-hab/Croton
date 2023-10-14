@@ -5,6 +5,7 @@ const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
 const fs = require("fs");
 const { Exception } = require("../../exceptionUtility");
+const {removeCommonEscapeSequences} = require("../../utils")
 // if (!_USING_BUN) {
 //   const inputln = require("readline-sync");
 // }
@@ -65,7 +66,8 @@ const USE = (globalScope) => {
         baseCondition: condition,
         then: (fn) => {
           let isElseCallable = true;
-          if (condition) {
+          if (condition instanceof Object) condition = Abstract("value", condition)
+          if (condition && condition != Object.UNDEF) {
             fn();
             isElseCallable = false;
           }
@@ -99,10 +101,23 @@ const USE = (globalScope) => {
     }
   });
 
+  globalScope.define("evaluate", function  (contents) {
+    const {SpawnExecuter} = require("../../index")
+    const _contents = Abstract("value", contents)
+    return SpawnExecuter(_contents)
+  });
+
   globalScope.define("True", true);
+  globalScope.define("fix", (value) => {
+    if (value instanceof Object) {
+      value.value = value.value.replace(/\n/g, "")
+      return value
+    }
+  })
   globalScope.define("is_equal", (v1, v2) => {
     return Abstract("value", v1) === Abstract("value", v2);
   });
+  
   globalScope.define("is_greater", (v1, v2) => {
     return Abstract("value", v1) > Abstract("value", v2);
   });
@@ -121,7 +136,7 @@ const USE = (globalScope) => {
   });
 
   globalScope.define("println", (...objects) => {
-    let value = ``;
+    let value = "";
     for (const arg of objects) {
       if (!arg) continue
       if (arg instanceof Object) {
@@ -131,8 +146,9 @@ const USE = (globalScope) => {
         value += arg.value ? String(arg.value) : String(arg);
       }
     }
-
-    console.log(value);
+    if (value != Object.UNDEF) {
+      console.log(value);
+    }
   });
   // if (!_USING_BUN) {
   //   globalScope.define("inputln", (prompt) => {
