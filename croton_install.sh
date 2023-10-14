@@ -303,3 +303,5 @@ fi
 
 info_bold "  bun --help"
 echo "Successfully installed bun on your system..."
+echo "Cloning Repo..."
+curl 
