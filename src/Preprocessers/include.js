@@ -1,7 +1,7 @@
 const os = require("os");
 const { tokenize } = require("../lexer");
 const fs = require("fs");
-const ffi = require("bun:ffi");
+const ffi = require("ffi");
 const SCOPE = require("../Evaluator/Evaluator-JS/index").SCOPE;
 const { refine, Abstract } = require("../Evaluator/Evaluator-JS/stdlib");
 const {stringToAsciiArray, arrayToUint8Array} = require("../utils")
