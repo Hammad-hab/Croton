@@ -10,7 +10,6 @@ const PR_AV_EXTENSIONS = {
 }
 let PR_EN_EXTENSIONS = {
     ObjectParse,
-    // StatementParse,
     FunctionDeclarationParse,
     FunctionParse,
     IdentifierParse,

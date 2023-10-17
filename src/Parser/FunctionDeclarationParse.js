@@ -1,10 +1,11 @@
+
 module.exports = function FunctionDeclarationParse(
   token,
   tokens_array,
   index,
   parse
 ) {
-  if (token.value === "declare") {
+  if (token.value === "declare" || token.value === "fn") {
     const generic = tokens_array.indexOf(token);
     let copiedGenerics = generic + 1;
     let fnName = tokens_array[copiedGenerics];

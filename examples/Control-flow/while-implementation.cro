@@ -1,26 +1,26 @@
 Mutable Container {}
 
 0 as i
-declare self{
+fn self{
     
     Arg0 as callback
 
     if(is_less(i 10)) as condition
     |condition then| as then
-    then(declare {
+    then(fn {
         println(i)
         sum(i 1) as i
         self()
     }) as condition
     |condition else| as else
-    else(declare {
+    else(fn {
         callback()
     })
 
-    return "La Càsa dè Papel"
+    return "The End!"
 } as |Container While|
 
 |Container While| as While
-While(declare {
+While(fn {
     println("OK")
 })

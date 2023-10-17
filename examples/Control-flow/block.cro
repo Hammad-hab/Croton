@@ -1,4 +1,4 @@
-declare scope {
+fn scope {
     block "callback-unique-scope"
     parent "globalScope"
 

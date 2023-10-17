@@ -1,3 +1,5 @@
+const ffi = require("ffi")
+
 function escapeSpecialCharacters(inputString) {
   // Define a map of special characters and their escape sequences
   const escapeMap = {
@@ -99,10 +101,28 @@ function removeCommonEscapeSequences(inputString) {
 }
 
 
+function toCString(string) {
+  if (string["value"]) string = string.value
+  const Arr = arrayToUint8Array(stringToAsciiArray(string))
+  return ffi.ptr(Arr) 
+}
+
+
+function FromCString(ptr) {
+  const ascii = ffi.toArrayBuffer(ptr);
+  // Ensure that the `toArrayBuffer` function returns a valid ArrayBuffer
+
+  const uint8Array = new Uint8Array(ascii);
+  const asciiValues = Array.from(uint8Array);
+  return String.fromCharCode(...asciiValues)
+}
+
 module.exports = {
   escapeSpecialCharacters,
   replaceASCIIEscapeSequences,
   stringToAsciiArray,
   removeCommonEscapeSequences,
-  arrayToUint8Array
+  arrayToUint8Array,
+  toCString,
+  FromCString
 }

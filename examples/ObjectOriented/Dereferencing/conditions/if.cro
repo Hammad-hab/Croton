@@ -5,7 +5,7 @@ if (is_equal(Master "Hammad")) as condition
 
 |condition then| as then
 
-then(declare callback {
+then(fn callback {
     println("Hammad is the creator of the language!")
 }) as else_container
     

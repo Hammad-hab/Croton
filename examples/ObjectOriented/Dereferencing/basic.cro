@@ -1,3 +1,3 @@
 println(
-    define(eulersNumber |Math Consts E|) # The major takeaway difference between |Math Consts E| and  |Math Consts e| is that E has more precison compared to e
+    define(eulersNumber |Math E|) # The major takeaway difference between |Math Consts E| and  |Math Consts e| is that E has more precison compared to e
 )

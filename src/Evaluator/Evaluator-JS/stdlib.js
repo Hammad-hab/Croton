@@ -5,10 +5,6 @@ const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
 const fs = require("fs");
 const { Exception } = require("../../exceptionUtility");
-const {removeCommonEscapeSequences} = require("../../utils")
-// if (!_USING_BUN) {
-//   const inputln = require("readline-sync");
-// }
 const Abstract = (property, object) =>
   object instanceof Object ? object[property] : object;
 const refine = (...args) => {
@@ -101,6 +97,8 @@ const USE = (globalScope) => {
     }
   });
 
+  globalScope.define("date", () => new Date())
+
   globalScope.define("evaluate", function  (contents) {
     const {SpawnExecuter} = require("../../index")
     const _contents = Abstract("value", contents)
@@ -179,31 +177,7 @@ const USE = (globalScope) => {
     return v_1 + Abstract("value", joinUsing) + v_2;
   });
 
-  globalScope.define("Math", {
-    public: {
-      Trig: {
-        sin: (value) => {
-          value = Abstract("value", value);
-          return Math.sin(value);
-        },
-        cos: (value) => {
-          value = Abstract("value", value);
-          return Math.cos(value);
-        },
-        tan: (value) => {
-          value = Abstract("value", value);
-          return Math.tan(value);
-        },
-      },
-      JSMath: Math,
-      Consts: {
-        PI: Math.PI,
-        pi: 3.142,
-        e: 2.71,
-        E: Math.E,
-      },
-    },
-  });
+  globalScope.define("Math", Math);
 
   // globalScope.define("File", {
   //   public: {

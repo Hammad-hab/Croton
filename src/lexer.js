@@ -115,12 +115,13 @@ function tokenize(string = "") {
     }
 
     if (character === "'" || character === '"') {
-      let character = string[(cursor += 1)];
+      const quoteType = character;
+      let char = string[(cursor += 1)];
       let content = ``;
-      while (character != '"') {
-        character = string[cursor];
-
-        content += character;
+      while (char != quoteType) {
+        char = string[cursor];
+        if (!char) new Exception(`Line ${0}`,`Unterminated String at ${cursor}`).throw()
+        content += char;
         cursor += 1;
       }
       let value;
@@ -179,4 +180,3 @@ function tokenize(string = "") {
 module.exports = {
   tokenize,
 };
-// require()
