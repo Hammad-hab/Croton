@@ -1,5 +1,1 @@
-<include "datetime">
-
-DateStore() as dateStore
-getTTime(dateStore) as time
-println(time)
+<include "stdin">

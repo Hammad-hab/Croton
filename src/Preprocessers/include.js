@@ -4,7 +4,7 @@ const ffi = require("ffi");
 const { refine, Abstract } = require("../Evaluator/Evaluator-JS/stdlib");
 const {stringToAsciiArray, arrayToUint8Array} = require("../utils")
 const {Exception} = require("../exceptionUtility")
-const LIBV = require("../lib/__lib.path");
+const LIBV = require("/usr/local/croton_/crotonlib/lib/__lib.path.js");
 const { globalScope } = require("../Evaluator/Evaluator-JS/scope");
 
 const include = (File = "") => {
@@ -25,7 +25,8 @@ const include = (File = "") => {
 				}
 				return file;
 			} else if (File in LIBV){
-				const coreLib = require(`../lib/${LIBV[File]}`)
+				// const coreLib = require(`../lib/${LIBV[File]}`)
+				const coreLib = require(`/usr/local/croton_/crotonlib/lib/${LIBV[File]}`)
 				globalScope.self = Object.assign(globalScope.self, coreLib)
 			}
 }
