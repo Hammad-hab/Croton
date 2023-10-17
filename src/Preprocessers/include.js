@@ -26,7 +26,7 @@ const include = (File = "") => {
 				return file;
 			} else if (File in LIBV){
 				// const coreLib = require(`../lib/${LIBV[File]}`)
-				const coreLib = require(`/usr/local/croton_/crotonlib/lib/${LIBV[File]}`)
+				const coreLib = require(`/usr/local/croton_/crotonlib/lib/${LIBV[File]}`)?.default
 				globalScope.self = Object.assign(globalScope.self, coreLib)
 			}
 }
