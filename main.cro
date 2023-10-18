@@ -1,5 +1,8 @@
 <include "stdin"> # goddamn
 <include "os">
+
+|os systeme| as systeme
+
 fn Loop {
     inputln("croton% ") as name
     |if (is_equal(name "exit"))| as condition
@@ -9,7 +12,7 @@ fn Loop {
     }) as condition
     |condition else| as else
     else(fn {
-        |os systeme(name)|
+        systeme(name)
         Loop()
     })
 }
