@@ -2255,6 +2255,7 @@ var require_lib = __commonJS((exports, module) => {
 // os.__lib.js
 var require_os___lib = __commonJS((exports, module) => {
   var _ = function(fn, ...args) {
+    console.log(args)
     return fn(...refine(...args));
   };
   var child_process = import.meta.require("child_process");
@@ -2277,8 +2278,8 @@ var require_os___lib = __commonJS((exports, module) => {
         mkdir: (name) => _(fs.mkdirSync, name),
         rmdir: (dir) => _(fs.rmdirSync, dir),
         rmf: (file) => _(fs.rmSync, file),
-        cp: (file1, file2) => fs.cpSync(file1, file2),
-        chmod: (fl, mod) => fs.chmodSync(fl, mod),
+        cp: (file1, file2) => _(fs.cpSync, file1, file2),
+        chmod: (fl, mod) => _(fs.chmodSync, fl, mod),
         platform: {
           userInf: os.userInfo("utf-8"),
           gcpus: os.cpus(),

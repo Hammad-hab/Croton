@@ -59,7 +59,8 @@ const USE = (globalScope) => {
   globalScope.define("if", (condition) => {
     return {
       public: {
-        baseCondition: condition,
+        __ACC: true,
+
         then: (fn) => {
           let isElseCallable = true;
           if (condition instanceof Object) condition = Abstract("value", condition)
@@ -70,6 +71,7 @@ const USE = (globalScope) => {
 
           const base = {
             public: {
+              __ACC: true,
               else: (fn) => {
                 if (isElseCallable) fn();
               },
@@ -134,6 +136,7 @@ const USE = (globalScope) => {
   });
 
   globalScope.define("println", (...objects) => {
+    console.log(objects[0].value.public)
     let value = "";
     for (const arg of objects) {
       if (!arg) continue
@@ -178,6 +181,8 @@ const USE = (globalScope) => {
   });
 
   globalScope.define("Math", Math);
+  globalScope.define("true", true)
+  globalScope.define("false", false)
 
   // globalScope.define("File", {
   //   public: {
