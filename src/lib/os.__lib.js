@@ -2255,7 +2255,7 @@ var require_lib = __commonJS((exports, module) => {
 // os.__lib.js
 var require_os___lib = __commonJS((exports, module) => {
   var _ = function(fn, ...args) {
-    console.log(refine(...args))
+    // console.log(refine(...args))
   };
   var child_process = import.meta.require("child_process");
   var { exec } = child_process;
