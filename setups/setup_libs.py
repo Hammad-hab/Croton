@@ -23,3 +23,5 @@ with zipfile.ZipFile(local_zip_filename, 'r') as zip_ref:
 
 print(f'Download complete. Folder saved at {output_path}')
 os.remove(local_zip_filename)
+
+print("Fetching Crotonc...")

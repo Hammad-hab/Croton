@@ -1,0 +1,36 @@
+#excludeExecutionTime
+# Please note that this implementation of the REPL is not suitable for acutal usage, it is just
+# an example and is not the best way to create a REPL. The actual, more performant REPL is being
+# implemented in JS/C for more features. Please Stand By and feel free to do anything with this code.
+<include "stdin">
+
+concat(date_now() "]") as str
+println(concat("Croton v0.1 [" str))
+println("Release v1.0, uses Croton v0.1 as the language for the REPL")
+
+fn Loop {
+	ignore(fn {
+        inputln("croton% ") as name
+        |if (is_equal(name "exit"))| as condition
+        |condition then| as then
+        then(fn {
+            println("Exiting...")
+        }) as condition
+        |condition else| as else
+        |condition elseif| as elseif
+        |elseif(is_equal(name "help")) then| as then
+        then(fn {
+            println("Type “exit“ to exit the shell. This Shell is capable of executing any Croton Code.")
+        })
+        else(fn {
+            evaluate(name) as retn
+            println(retn)
+            Loop()
+        })
+    })
+}
+
+Loop()
+# The comment at the top of the program “excludeExecutionTime“ is a command to the interpreter, 
+# telling it to not show the execution time of the program. The comment can be placed anywhere
+# in the program but it is recommended to put the command at the top 

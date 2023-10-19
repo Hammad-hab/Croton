@@ -27,6 +27,8 @@ function parse(tokens_array) {
       continue;
     }
 
+    
+
     // Parsing Numbers. In the end, this condition evaluates if the token is a FloatLiteral or an IntegerLiteral
     if (token.type === "Numeric") {
       let type;

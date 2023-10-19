@@ -314,6 +314,7 @@ class Evaluator {
 				}
 
 				parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
+
 				continue;
 			}
 			if (

@@ -100,11 +100,16 @@ const USE = (globalScope) => {
   });
 
   globalScope.define("date", () => new Date())
-
+  globalScope.define("date_now", () => new Date().toLocaleDateString())
   globalScope.define("evaluate", function  (contents) {
     const {SpawnExecuter} = require("../../index")
     const _contents = Abstract("value", contents)
     return SpawnExecuter(_contents)
+  });
+  globalScope.define("ignore", function  (fn) {
+    Exception.PREV_M = true
+    fn()
+    Exception.PREV_M = false
   });
 
   globalScope.define("True", true);
@@ -136,7 +141,7 @@ const USE = (globalScope) => {
   });
 
   globalScope.define("println", (...objects) => {
-    console.log(objects[0].value.public)
+    // console.log(objects[0].value.public)
     let value = "";
     for (const arg of objects) {
       if (!arg) continue
@@ -177,6 +182,7 @@ const USE = (globalScope) => {
   globalScope.define("concat", (v1, v2, joinUsing = "") => {
     const v_1 = Abstract("value", v1);
     const v_2 = Abstract("value", v2);
+    // console.log(v_1, v_2)
     return v_1 + Abstract("value", joinUsing) + v_2;
   });
 

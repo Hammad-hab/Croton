@@ -14,8 +14,11 @@ const SpawnExecuter = function (contents) {
 }
 const SpawnFileBasedExecuter = function (file_name) {
 	const contents = fs.readFileSync(file_name)
+	
 	if (contents)
-		return SpawnExecuter(contents)
+		SpawnExecuter(contents)
+    if (contents.includes("excludeExecutionTime")) return false 
+	return true
 
 }
 
