@@ -2279,6 +2279,7 @@ var require_os___lib = __commonJS((exports, module) => {
         rmf: (file) => _(fs.rmSync, file),
         cp: (file1, file2) => _(fs.cpSync, file1, file2),
         chmod: (fl, mod) => _(fs.chmodSync, fl, mod),
+        getArgv: () => process.argv,
         platform: {
           userInf: os.userInfo("utf-8"),
           gcpus: os.cpus(),

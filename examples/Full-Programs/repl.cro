@@ -10,18 +10,41 @@ println(concat(concat("Croton v0.1 [" date_now()) "]"))
 println("Release v1.0, uses Croton v0.1 as the language for the REPL")
 
 fn Loop {
-    	ignore(fn {
-        inputln("croton% ") as name
-        if(is_equal(name "exit") fn {
-            println("Bye!")
-        }) as condition
-        |condition elseif| as elseif
-        elseif(is_equal(name "help") fn {
-            println("Welcome to Croton REPL v1.0. Following are some Repl Commands:" endl tabl "help: Print this prompt." endl tabl)
-        })
+	ignore(fn {
+		inputln("croton% ") as name
+		if (NOT(name) fn {
+		   "5" as name
+		})
+		if(is_equal(name "exit") fn {
+			println("Bye!")
+		}) as condition
 
+		|condition elseif| as elseif
 
-    })
+		elseif(is_equal(name "help") fn {
+
+			println("Welcome to Croton REPL v1.0. Following are some Repl Commands:
+    help: prints this prompt           
+    exit: exits the session
+Apart from that you can freely execute Croton functions, statements etc here.")
+		Loop()
+
+		})
+
+		|condition else| as else
+		else(fn {
+			evaluate(name) as retn
+			if (is_equal(retn UNDEF) fn {
+				println(cl_red retn fmt_reset)
+			}) as condition
+			|condition else| as else
+			else(fn {
+				println(retn)
+			})
+			Loop()
+		})
+	})
+
 }
 
 Loop()

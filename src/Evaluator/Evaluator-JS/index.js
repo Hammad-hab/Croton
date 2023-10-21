@@ -281,17 +281,21 @@ class Evaluator {
 				parsedToken.type === "Identifier" &&
 				parsedToken.name === "as"
 			) {
-				if (!lFunctionRetn) {
+				if (!lFunctionRetn && !isBoolean(lFunctionRetn)) {
 					lFunctionRetn = Object.UNDEF
 				}
 				let name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
 				if (name.type === "Identifier") {
+
 					// console.log(STD.Abstract("value", STD.Abstract("value", lFunctionRetn)))
 					name = name.name;
+					// console.log()
+
 					SCOPE.define(
 						name,
-						STD.Abstract("value", STD.Abstract("value", lFunctionRetn))
+						 STD.Abstract("value", STD.Abstract("value", lFunctionRetn))
 					);
+
 					// console.log(SCOPE.get(name))
 				} else if (
 					name.type === "ObjectAccessPoint" &&

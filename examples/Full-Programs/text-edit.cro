@@ -1,0 +1,7 @@
+<include "stdin">
+<incldue "fmt">
+<include "os">
+
+|os getArgv()| as argv
+
+pritnln(argv)

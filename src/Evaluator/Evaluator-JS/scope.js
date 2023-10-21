@@ -1,4 +1,4 @@
-const { uniqueId } = require("lodash");
+const { uniqueId, isBoolean, isNumber } = require("lodash");
 const {Object} = require("./datatypes/Object")
 class Scope {
   constructor(name) {
@@ -12,7 +12,7 @@ class Scope {
   }
 
   define(proprety, value) {
-    if (!value) value = Object.UNDEF
+    if (!value && !isBoolean(value) && !isNumber(value)) value = Object.UNDEF
     this.self[proprety] = value;
     return this.self[proprety];
   }

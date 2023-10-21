@@ -146,7 +146,8 @@ const USE = (globalScope) => {
 		Exception.PREV_M = false
 	});
 
-	globalScope.define("True", true);
+	globalScope.define("true", true);
+	globalScope.define("false", false);
 	globalScope.define("fix", (value) => {
 		if (value instanceof Object) {
 			value.value = value.value.replace(/\n/g, "")
@@ -171,8 +172,11 @@ const USE = (globalScope) => {
 	});
 
 	globalScope.define("NOT", (v1) => {
-		return !Abstract("value", v1);
+		
+		return !Abstract("value", v1) || Abstract("value",v1) === Object.UNDEF;
 	});
+
+	globalScope.define("UNDEF", Object.UNDEF)
 
 	globalScope.define("println", (...objects) => {
 		// console.log(objects[0].value.public)
@@ -186,15 +190,10 @@ const USE = (globalScope) => {
 				value += arg.value ? String(arg.value) : String(arg);
 			}
 		}
-		if (value != Object.UNDEF) {
+		// if (value != Object.UNDEF) {
 			console.log(value);
-		}
+		// }
 	});
-	// if (!_USING_BUN) {
-	// globalScope.define("inputln", (prompt) => {
-	// return inputln.question(Abstract("value", prompt));
-	// });
-	// }
 
 	/* Mathematical Functions */
 	globalScope.define("sum", (...args) => {
