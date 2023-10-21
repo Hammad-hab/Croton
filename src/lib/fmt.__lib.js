@@ -1,6 +1,7 @@
 module.exports = {
 	endl: "\n",
 	tabl: "\t",
+	endtabl: "\n\t",
 	// Text Formatting
 	fmt_reset: '\x1b[0m',
 	fmt_bold: '\x1b[1m',

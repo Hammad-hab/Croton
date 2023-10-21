@@ -3,6 +3,8 @@
 # an example and is not the best way to create a REPL. The actual, more performant REPL is being
 # implemented in JS/C for more features. Please Stand By and feel free to do anything with this code.
 <include "stdin">
+<include "fmt">
+
 
 println(concat(concat("Croton v0.1 [" date_now()) "]"))
 println("Release v1.0, uses Croton v0.1 as the language for the REPL")
@@ -15,7 +17,7 @@ fn Loop {
         }) as condition
         |condition elseif| as elseif
         elseif(is_equal(name "help") fn {
-            println("Welcome to Croton REPL v1.0. Following are some Repl Commands:" endl "help")
+            println("Welcome to Croton REPL v1.0. Following are some Repl Commands:" endl tabl "help: Print this prompt." endl tabl)
         })
 
 
