@@ -19,6 +19,7 @@ function parse(tokens_array) {
       continue;
     }
     if (token.type === "Preprocesser") {
+      // console.log(token.name)
       let data = PREPROCESSORZ[token.name](token.target, token.operation);
       if (data) {
         AST.push(...parse(data));
