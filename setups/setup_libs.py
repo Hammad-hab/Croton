@@ -25,3 +25,4 @@ print(f'Download complete. Folder saved at {output_path}')
 os.remove(local_zip_filename)
 
 print("Fetching Crotonc...")
+requests.get("https://github.com/Hammad-hab/Croton/raw/main/clis/crotonc")

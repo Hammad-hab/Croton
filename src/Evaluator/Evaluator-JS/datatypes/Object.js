@@ -121,6 +121,22 @@ const String = class {
 		return this.__obj.value.slice(i1, i2 ? i2: this.__obj.value.length)
 	}
 
+	lowerCase() {
+		return this.__obj.value.toLowerCase()
+	}
+
+	upperCase() {
+		return this.__obj.value.toUpperCase()
+	}
+
+	capitalize() {
+		const str = this.__obj.value[0].toUpperCase() + this.__obj.value.slice(1, this.__obj.value.length)
+		console.log(str)
+		
+		return str
+		
+	}
+
 	len() {
 		return this.__obj.value.length
 	}

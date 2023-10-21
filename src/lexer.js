@@ -16,7 +16,7 @@ function tokenize(string = "") {
       let index = cursor;
       let character = string[(cursor += 1)];
       let content = "";
-      while (character != "#" && character != "\n") {
+      while (character != "\n") {
         if (cursor >= 10000) {
           return new Exception(
             index,

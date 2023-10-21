@@ -15,3 +15,4 @@ char* inputln(char* prompt) {
 
 	return promptData;
 }
+
