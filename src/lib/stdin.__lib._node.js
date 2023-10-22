@@ -1,6 +1,6 @@
-const prompt = require("prompt-sync")()
+const prompt = require("readline-sync")
 
 
 module.exports = {
-    inputln: prm => prompt(prm)
+    inputln: prm => prompt.question(prm)
 }
