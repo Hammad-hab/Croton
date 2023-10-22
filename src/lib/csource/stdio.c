@@ -12,7 +12,6 @@ char* inputln(char* prompt) {
 	if (len > 0 && promptData[len - 1] == '\n') {
 		promptData[len - 1] = '\0';
 	}
-
 	return promptData;
 }
 

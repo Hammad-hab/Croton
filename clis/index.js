@@ -1,4 +1,4 @@
-#!/Users/hammad/.bun/bin/bun
+#!/usr/local/bin/node
 let { argv } = require("process");
 const { SpawnFileBasedExecuter } = require("../src/index");
 argv = argv.slice(2, argv.length);
@@ -16,3 +16,5 @@ const file = argv[0];
     );
   }
   
+
+// "/Users/hammad/.bun/bin/bun"

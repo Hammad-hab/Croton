@@ -1,11 +1,16 @@
+const USE_NODE = true
 const { tokenize } = require("../lexer");
 const fs = require("fs-extra");
-const ffi = require("ffi");
-const { refine, Abstract } = require("../Evaluator/Evaluator-JS/stdlib");
+const { refine, Abstract, USE } = require("../Evaluator/Evaluator-JS/stdlib");
 const {stringToAsciiArray, arrayToUint8Array} = require("../utils")
 const {Exception} = require("../exceptionUtility")
 const LIBV = require("/usr/local/croton_/crotonlib/lib/__lib.path.js");
 const { globalScope } = require("../Evaluator/Evaluator-JS/scope");
+let ffi;
+if (!USE_NODE) {
+	ffi = require("ffi");
+
+}
 
 const include = (File = "") => {
 	let path = File.split("/")
@@ -33,7 +38,8 @@ const include = (File = "") => {
 }
 
 const cinclude = (File="", function_ds = null) => {
-	console.log("\u001b[33mWARNING: cinclude is experimental, do not use it in production codebases.\x1b[0m")
+	if (!USE_NODE) {
+		console.log("\u001b[33mWARNING: cinclude is experimental, do not use it in production codebases.\x1b[0m")
 	if (File.includes('"')) File = File.replaceAll('"', "");
 	if (File.includes('"')) File = File.replaceAll("'", "");
 	if (File.endsWith(ffi.suffix) || function_ds) {
@@ -71,6 +77,7 @@ const cinclude = (File="", function_ds = null) => {
 				});
 		}
 		return 0;
+	}
 	}
 }
 module.exports = {
