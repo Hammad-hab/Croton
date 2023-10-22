@@ -1,5 +1,4 @@
 <parserlog Loading-inputln.so....>
-<include "./inputln.so" inputln-char*-char*>
 <parserlog Successfully-Loaded-inputln.so....>
 
 |Math JSMath random| as random # Dereferencing Properties

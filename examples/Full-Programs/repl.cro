@@ -2,7 +2,6 @@
 # Please note that this implementation of the REPL is not suitable for acutal usage, it is just
 # an example and is not the best way to create a REPL. The actual, more performant REPL is being
 # implemented in JS/C for more features. Please Stand By and feel free to do anything with this code.
-<include "stdin">
 <include "fmt">
 
 

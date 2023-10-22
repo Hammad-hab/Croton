@@ -1,5 +1,4 @@
 <parserlog Loading-inputln.so....>
-<include "stdin">
 <parserlog Successfully-Loaded-inputln.so....>
 
 declare loop {

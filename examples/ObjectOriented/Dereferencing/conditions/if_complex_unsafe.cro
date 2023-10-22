@@ -1,5 +1,4 @@
 <parserlog Loading-inputln.so....>
-<cinclude "./inputln.so" inputln-char*-char*>
 <parserlog Successfully-Loaded-inputln.so....>
 
 declare loop {

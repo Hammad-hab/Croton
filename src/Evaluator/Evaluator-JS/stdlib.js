@@ -1,6 +1,7 @@
 // const _USING_BUN = true;
 
 const { globalScope } = require("./scope");
+const inputln = require("readline-sync")
 const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
 const fs = require("fs");
@@ -177,6 +178,7 @@ const USE = (globalScope) => {
 	});
 
 	globalScope.define("UNDEF", Object.UNDEF)
+	globalScope.define("inputln",prompt => inputln.question(Abstract("value", prompt)))
 
 	globalScope.define("println", (...objects) => {
 		// console.log(objects[0].value.public)
