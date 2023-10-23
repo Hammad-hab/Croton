@@ -2,7 +2,6 @@ const { globalScope, Scope } = require("./scope");
 const { Exception } = require("../../exceptionUtility");
 const { Object } = require("./datatypes/Object");
 const { Function } = require("./datatypes/Function");
-
 const STD = require("./stdlib");
 const { isBoolean, isNumber } = require("lodash");
 STD.USE(globalScope);
@@ -14,6 +13,7 @@ class Evaluator {
 	SCOPE = globalScope;
 	scopes = { globalScope };
 	specialVariables = ["define", "return"];
+	IdentifierLookUpHistory = new Map()
 	specialVariablesAllowedExecution = ["return"];
 	specialVariablesExecuter = {
 		define: function def(name, value, scope = null) {
@@ -56,6 +56,7 @@ class Evaluator {
 		}
 		const _arguments = [];
 		parsedToken.arguments.forEach((v, i) => {
+			if (!v.evaluated)
 			_arguments.push(this.__call__(v, this.SCOPE, line));
 		});
 
@@ -71,13 +72,14 @@ class Evaluator {
 			).throw();
 		}
 	}
-
+	
 	evaluateIdentifier(parsedToken, line) {
 		if (parsedToken.name === "false" || parsedToken.name === "true") {
 			return {"false": false, "true": true}[parsedToken.name]
 		}
-		const obj = SCOPE.strictSearch(parsedToken.name);
-
+		const FoundUnfoundInstance = this.IdentifierLookUpHistory.get(`${parsedToken.name}-${parsedToken.type}`)
+		if (FoundUnfoundInstance) return FoundUnfoundInstance
+		var obj = SCOPE.strictSearch(parsedToken.name);
 		if (obj instanceof Function) {
 			// Handle function call
 			return obj();
@@ -89,9 +91,12 @@ class Evaluator {
 			).throw();
 		}
 
-		if (obj instanceof Object === false) {
-			return new Object(obj, parsedToken.name, parsedToken.type);
+		if ((obj instanceof Object) === false && !obj.isCSObject && !isNumber(obj)) {
+			let fObj = new Object(obj, parsedToken.name, parsedToken.type)
+			if (this.IdentifierLookUpHistory.size < 5) this.IdentifierLookUpHistory.set(`${parsedToken.name}-${parsedToken.type}`, fObj)
+			return fObj;
 		} else {
+			if (this.IdentifierLookUpHistory.size < 5) this.IdentifierLookUpHistory.set(`${parsedToken.name}-${parsedToken.type}`, obj)
 			return obj;
 		}
 	}
@@ -131,11 +136,7 @@ class Evaluator {
 					}
 				}
 		}
-
-
-
 		let target = 0;
-		// console.log(object)
 		if (Array.isArray(object)) {
 			target = object;
 		} else {
@@ -205,10 +206,7 @@ class Evaluator {
 						parsedToken.accessors[parsedToken.accessors.length - 1].name
 					} Thrown by NullAccessor Outsource`
 				).throw();
-			// console.log("A", parsedToken.accessors)
 			parsedToken.accessors = [fsElement, ...parsedToken.accessors];
-			// console.log("B", parsedToken.accessors)
-			// if (!target === "FN_CALL_NULL")
 			return new Object(target, Object.UNDEF, "Identifier");
 		}
 	}
@@ -286,14 +284,10 @@ class Evaluator {
 				}
 				let name = parsedTokens[parsedTokens.indexOf(parsedToken) + 1];
 				if (name.type === "Identifier") {
-
-					// console.log(STD.Abstract("value", STD.Abstract("value", lFunctionRetn)))
 					name = name.name;
-					// console.log()
-
 					SCOPE.define(
 						name,
-						 STD.Abstract("value", STD.Abstract("value", lFunctionRetn))
+							STD.Abstract("value", STD.Abstract("value", lFunctionRetn))
 					);
 
 					// console.log(SCOPE.get(name))
@@ -320,7 +314,8 @@ class Evaluator {
 				parsedTokens[parsedTokens.indexOf(parsedToken) + 1] = null;
 
 				continue;
-			}
+			} 
+
 			if (
 				parsedToken &&
 				parsedToken.type === "Identifier" &&
@@ -373,6 +368,7 @@ class Evaluator {
 			}
 
 			lFunctionRetn = this.__call__(parsedToken, SCOPE, i);
+			this.lastFunctionCall = lFunctionRetn
 		}
 
 		SCOPE = globalScope;
@@ -380,7 +376,13 @@ class Evaluator {
 }
 
 const _evaluator = new Evaluator();
-const SpawnEvaluator = _evaluator.__execute__.bind(_evaluator);
+const SpawnEvaluator = (...args) => {
+	try {
+		return _evaluator.__execute__.bind(_evaluator)(...args)
+	} catch (e) {
+		new Exception("INF", `Maximum Interpreter Allocation Exceeded Aborting Operation. This error occurs when a loop runs for too long and the memory stack is full. Currently this error cannot be fixed, we are working really hard to make it work so please stand by.`).throw()
+	}
+};
 
 module.exports = {
 	SpawnEvaluator,

@@ -1,18 +1,17 @@
 # block "Application"
-    
-define(Master "Hammad")
-if (is_equal(Master "Hammad")) as condition
+"DarthVader" as Master
+if (is_equal(Master "Yoda")) as condition
 
 |condition then| as then
 
-then(fn callback {
-    println("Hammad is the creator of the language!")
+then(fn {
+    println("Yoda is the master of the force!")
 }) as else_container
     
 |else_container else| as else
 
-else(declare callback {
-    println("Whoever it is, he is not the creator of this language")
+else(fn {
+    println("Whoever it is, he is not the master of the force!")
 })
 
 # end "Application"

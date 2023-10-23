@@ -1,10 +1,8 @@
 // const _USING_BUN = true;
-
-const { globalScope } = require("./scope");
+const cluster = require("cluster")
 const inputln = require("readline-sync")
 const { Object } = require("./datatypes/Object");
 const _ = require("lodash");
-const fs = require("fs");
 const { Exception } = require("../../exceptionUtility");
 const Abstract = (property, object) =>
 	object instanceof Object ? object[property] : object;
@@ -134,6 +132,11 @@ const USE = (globalScope) => {
 		}
 	});
 
+	globalScope.define("fork", () => {
+		if (cluster.isPrimary) cluster.fork()
+
+	})
+
 	globalScope.define("date", () => new Date())
 	globalScope.define("date_now", () => new Date().toLocaleDateString())
 	globalScope.define("evaluate", function (contents) {
@@ -149,12 +152,6 @@ const USE = (globalScope) => {
 
 	globalScope.define("true", true);
 	globalScope.define("false", false);
-	globalScope.define("fix", (value) => {
-		if (value instanceof Object) {
-			value.value = value.value.replace(/\n/g, "")
-			return value
-		}
-	})
 	globalScope.define("is_equal", (v1, v2) => {
 		return Abstract("value", v1) === Abstract("value", v2);
 	});
@@ -181,7 +178,6 @@ const USE = (globalScope) => {
 	globalScope.define("inputln",prompt => inputln.question(Abstract("value", prompt)))
 
 	globalScope.define("println", (...objects) => {
-		// console.log(objects[0].value.public)
 		let value = "";
 		for (const arg of objects) {
 			if (!arg) continue
@@ -192,9 +188,7 @@ const USE = (globalScope) => {
 				value += arg.value ? String(arg.value) : String(arg);
 			}
 		}
-		// if (value != Object.UNDEF) {
-			console.log(value);
-		// }
+		console.log(value);
 	});
 
 	/* Mathematical Functions */
@@ -210,41 +204,20 @@ const USE = (globalScope) => {
 	globalScope.define("divide", (arg0, arg1) => {
 		return _.divide(refine(arg0, arg1));
 	});
-	globalScope.define("increment", (name, arg0 = 1) => {
-		globalScope.define(Abstract("name", name), Abstract("value", arg0));
+	globalScope.define("increment", (name) => {
+		globalScope.define(Abstract("name", name), globalScope.self[Abstract("name", name)] + 1);
+
 		return;
 	});
 	globalScope.define("concat", (v1, v2, joinUsing = "") => {
 		const v_1 = Abstract("value", v1);
 		const v_2 = Abstract("value", v2);
-		// console.log(v_1, v_2)
 		return v_1 + Abstract("value", joinUsing) + v_2;
 	});
 
 	globalScope.define("Math", Math);
 	globalScope.define("true", true)
 	globalScope.define("false", false)
-
-	// globalScope.define("File", {
-	// public: {
-	// read: (name) => {
-	// name = Abstract("value", name);
-	// return fs.readFileSync(name, globalScope.get("defaultEncoding"));
-	// },
-	// write: (name, content) => {
-	// name = Abstract("value", name);
-	// content = Abstract("value", content);
-
-	// return fs.writeFileSync(name, content);
-	// },
-	// append: (name, content) => {
-	// name = Abstract("value", name);
-	// content = Abstract("value", content);
-	// return fs.appendFileSync(name, content);
-	// },
-	// },
-	// });
-
 	globalScope.define("Array", (...args) => {
 		return args;
 	});

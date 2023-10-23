@@ -1,9 +1,6 @@
 <parserlog Loading-inputln.so....>
 <parserlog Successfully-Loaded-inputln.so....>
 
-|Math JSMath random| as random # Dereferencing Properties
-|Math JSMath floor| as floor # Dereferencing Properties
-
 define(USER_INPUT inputln(">>> "))
 if(USER_INPUT) as condition
 

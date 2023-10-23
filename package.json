@@ -6,6 +6,9 @@
     "astgen": "./clis/astgen",
     "crotoninit": "./crotoninit/crotoninit"
   },
+  "pkg": {
+    "targets": ["win"]
+  },
   "dependencies": {
     "@babel/parser": "^7.22.5",
     "babel": "^6.23.0",

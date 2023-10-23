@@ -19,6 +19,8 @@ class Object {
 		this.value = value;
 		this.name = name;
 		this._type = type;
+		this.isCSObject = true
+		this.evaluated = true
 		this.strong = false;
 		this.masterSCOPEID = null
 		if (this._type.toLowerCase() === "string") {

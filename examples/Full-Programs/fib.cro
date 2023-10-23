@@ -1,0 +1,15 @@
+define(nterms 434) # Max call stack
+define(count 0)
+define(n1 0)
+define(n2 1)
+
+fn Loop {
+    if (is_greater(nterms count) fn {
+        sum(n1 n2) as nth
+        n2 as n1
+        nth as n2
+        sum(count 1) as count
+        Loop()
+    }) 
+}
+Loop()

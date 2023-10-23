@@ -14,11 +14,14 @@ const SpawnExecuter = function (contents) {
 }
 const SpawnFileBasedExecuter = function (file_name) {
 	const contents = fs.readFileSync(file_name)
-	
-	if (contents)
+
+	if (contents){
+		const t0 = performance.now()
 		SpawnExecuter(contents)
-    if (contents.includes("excludeExecutionTime")) return false 
-	return true
+		if (contents.includes("excludeExecutionTime")) return false 
+		const t1 = performance.now()
+		return t1 - t0
+	}
 
 }
 

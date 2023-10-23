@@ -1,5 +1,4 @@
 const { PREPROCESSORZ, PR_EN_EXTENSIONS } = require("./Preprocessers/index");
-const { tokenize } = require("./lexer");
 const ObjectAccessor = require("./Parser/ObjectAccessor");
 
 /**
@@ -9,9 +8,7 @@ const ObjectAccessor = require("./Parser/ObjectAccessor");
  */
 function parse(tokens_array) {
   const AST = [];
-  const MAX_DEPTH_EXCEED = 100000000000000;
   const cachedLength = tokens_array.length;
-  let Depth = 0;
   for (let index = 0; index < cachedLength; ) {
     const token = tokens_array[index];
     if (!token) {
@@ -19,7 +16,6 @@ function parse(tokens_array) {
       continue;
     }
     if (token.type === "Preprocesser") {
-      // console.log(token.name)
       let data = PREPROCESSORZ[token.name](token.target, token.operation);
       if (data) {
         AST.push(...parse(data));
