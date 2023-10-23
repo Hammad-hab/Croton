@@ -14,5 +14,3 @@ const file = argv[0];
     );
   }
   
-
-// "/Users/hammad/.bun/bin/bun"
