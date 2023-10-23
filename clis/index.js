@@ -3,7 +3,7 @@ let { argv } = require("process");
 const { SpawnFileBasedExecuter } = require("../src/index");
 argv = argv.slice(2, argv.length);
 const file = argv[0];
-
+console.log("Fool!")
   if (file) {
     let showExecutionTime = SpawnFileBasedExecuter(file);
     if (showExecutionTime)
