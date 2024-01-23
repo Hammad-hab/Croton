@@ -1,0 +1,109 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js" integrity="sha512-8RnEqURPUc5aqFEN04aQEiPlSAdE0jlFS/9iGgUyNtwFnSKCXhmB6ZTNl7LnDtDWKabJIASzXrzD0K+LYexU9g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/coffeescript/coffeescript.min.js" integrity="sha512-MV689iwewbYdTX3eW2U8jidpIiENEH/ivCX56+2xmO07XXK1tB64yeeKl5ZXjPjAUVDDY4ZUVj5bOtUxIfocjA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/theme/dracula.min.css" integrity="sha512-gFMl3u9d0xt3WR8ZeW05MWm3yZ+ZfgsBVXLSOiFz2xeVrZ8Neg0+V1kkRIo9LikyA/T9HuS91kDfc2XWse0K0A==" crossorigin="anonymous" referrerpolicy="no-referrer" />    
+    <link rel="stylesheet" href="index.css">
+    <title>Croton Lang</title>
+</head>
+<body>
+
+    <div class="articleSection__g"></div>
+    <div class="articleSection__l"></div>
+
+    <div style="width:100vw; display:flex; flex-direction:row;">
+        <div id="container" style="margin-top: 25vh">
+            <div class="uppercut">
+                <span class="tag">v0.1 Croton Beta</span>
+                <h1 style="font-size:50px;" class="neon">Introducing Croton,</h1>
+                <p style="font-weight: bold; margin-left:30px" class="reflect">
+                    A futuristic, Python powered programming language for
+                    writing multilayered data cleaning systems 
+                    <span style="display: block;">
+                        <button style="display: inline-block;">Get started</button>
+                        <button style="display: inline-block;">Download Beta</button>
+                    </span>
+                    
+                </p>
+            </div>
+            <div class="lowercut">
+            </div>
+        </div>
+        <div id="container" style="margin-top: 25vh; margin-left:-1vw;">
+            <div class="uppercut" style="z-index: -10">
+                <textarea class="croton_s"></textarea>
+            </div>
+            <div class="lowercut"></div>
+        </div>
+    </div>
+
+
+    <div style="display:flex; flex-direction:row; gap:50px; width:100vw; margin-bottom:100px; margin-top:100px;" class="flex-center">
+        <div class="tag type-b">
+            <h2 class="standardp">Made With Transparency</h2>
+            <hr/>
+            <p class="standardp pp">
+                Croton has been designed to allow programmers to customize the behavior of the language
+                constructs like If-conditions, Loops, variable declarations and more!
+            </p>
+        </div>
+        <div class="tag type-b">
+            <h2 class="standardp">Nothing Crazy Underneath</h2>
+            <hr/>
+            <p class="standardp pp">
+                Data cleaning is complicated as it is, Croton aims to change that not by adding more
+                complexity to the process but by introducing a hierarchical system which makes it easy
+                to understand what's going on!
+            </p>
+        </div>
+        <div class="tag type-b">
+            <h2 class="standardp">Simple as Simple can be</h2>
+            <hr/>
+            <p class="standardp pp">
+                Even though Croton is not as Readable as Python, it does have a 
+                syntax that is readable and an interpreter that's easy to understand
+                and customize.
+            </p>
+        </div>
+    </div>
+    <div class="articleSection__l articleSection_c2" style="width:30vw; height:30vh; margin-top:10vh"></div>
+    <div class="articleSection__g articleSection_c2" style="width:30vw; height:30vh; margin-top:10vh;"></div>
+    <img src="/static/data-h.svg" alt="data hierarchical system illustration" style="margin-left: 200px; z-index:-10">
+    <div id="container" style="margin-top: 10vh; float:right; width:40vw;">
+        <div class="uppercut">
+            <h1 style="font-size:50px;" class="neon">Hierarchical Pattern</h1>
+            <p style="font-weight: bold; margin-left:30px; width: 25vw;" class="reflect">
+                The best way to clean data is to do it in a hierchical pattern.
+                It is much more easier to clean data if you're working in a step-by-step
+                component-wise enviornment where data flow can be controlled in an effective way.
+                <span style="display: block;">
+                    <button style="display: inline-block;">Documentation</button>
+                </span>
+            </p>
+        </div>
+        <div class="lowercut">
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>  
+    <script>
+        const myTextArea = document.querySelector("textarea")
+        var myCodeMirror = CodeMirror(function(elt) {
+            myTextArea.parentNode.replaceChild(elt, myTextArea);
+          }, {
+            value: '  <include "fmt"> # including formatting\n  <include "datclean"> # including data cleaning functions\n\n  Mutable Application {\n\tVersion 1.0\n\tAuthor "Croton"\n  }\n\n  |Application main| as fn main {\n\n\t println(fmt_green fmt_bold "Starting cleaning procedure..." fmt_reset)\n\t DFrame = |Datclean ImportFrame("./datascientest_salaries.xlsx")|\n\t DFrame = |Datclean dropNull(DFrame)|\n\n  }\n\n  |Application main()|',
+            lineNumbers: true,
+            mode: "coffeescript",
+            theme: "dracula",
+            focus: true
+         });
+         gsap.to(".articleSection__g", {
+            opacity:1,
+            duration: 0.5
+         })
+      </script> 
+</body>
+</html>

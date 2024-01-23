@@ -47,7 +47,8 @@ module.exports = function FunctionDeclarationParse(
         contents,
         length: fnName !== "__lambda!" ? length + 3 : length + 2,
         name: fnName === "__lambda!" ? fnName : fnName.value,
-        lambda: fnName.value === "_lambda",
+        lambda: fnName === "__lambda!",
+        fn_type : token.value
       };
     }
   }

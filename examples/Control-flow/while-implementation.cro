@@ -6,14 +6,15 @@ fn self{
     Arg0 as callback
 
     if(is_less(i 10)) as condition
-    |condition then| as then
-    then(fn {
+    |condition then| as aliasThen
+    aliasThen(fn {
         println(i)
         sum(i 1) as i
         self()
     }) as condition
-    |condition else| as else
-    else(fn {
+
+    |condition else| as aliasElse
+    aliasElse(fn {
         callback()
     })
 
@@ -21,6 +22,8 @@ fn self{
 } as |Container While|
 
 |Container While| as While
+
 While(fn {
     println("OK")
 })
+

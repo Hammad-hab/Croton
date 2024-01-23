@@ -3,3 +3,7 @@
 # immediatly during parsing. This allows it to execute regardless of main-thread blockage #
 # The parserlog syntax is a bit peculiar, it does not take strings. Instead it takes words seperated by hypens
 # which it considers as whitespaces. #
+
+# lexer : breaks down and text into small tokens and assigns a sparse meaning
+# parser: small meanings > large meanings > patterns > Language contructions i.e Function, identifier, Object, Imutable 
+# Evaulate : > Language Constructs > Execute

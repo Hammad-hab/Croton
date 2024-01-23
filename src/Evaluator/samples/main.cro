@@ -1,0 +1,10 @@
+fn function {
+    hello = 10
+    println("Hello World")
+}
+
+
+
+
+if [hi] {
+}

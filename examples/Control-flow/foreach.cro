@@ -1,6 +1,5 @@
 Array("H" "e" "l" "l" "o" " " "w" "o" "r" "l" "d") as my_array
 foreach(my_array declare {
     Arg0 as element
-
     println(element)
 })

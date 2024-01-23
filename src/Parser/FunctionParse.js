@@ -12,6 +12,7 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
       tokens_array[nextTokenIndex].type === "Parenthesis" &&
       tokens_array[nextTokenIndex].isOpening
     ) {
+      
       // This is a function call
       const parameters = [];
       let parameterController = 1;
@@ -44,7 +45,7 @@ module.exports = function functionParse(token, tokens_array, index, parse) {
         element.isArgument = true
       });
     
-
+      // console.log(token.value)
       return {
         type: "Function",
         name: token.value,

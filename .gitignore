@@ -2,3 +2,7 @@
 /.vscode
 .prettierrc
 bun.lockb
+fmt
+os
+stdin
+stdout

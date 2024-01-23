@@ -6,24 +6,39 @@ const ObjectAccessor = require("./Parser/ObjectAccessor");
  * @param {[{type:"Name" | "String" | "Symbol" | "Preprocesser" | "Numeric", position: Number, value: Number | String}]} tokens_array
  * @returns {[]}
  */
+const preprocessor_modifiers = []
 function parse(tokens_array) {
   const AST = [];
   const cachedLength = tokens_array.length;
   for (let index = 0; index < cachedLength; ) {
+    preprocessor_modifiers.forEach(fn => {
+      tokens_array[index] = fn(tokens_array[index])
+    })
+    // console.log(tokens_array[index])
     const token = tokens_array[index];
     if (!token) {
       index += 1;
       continue;
     }
+    // console.log(token)
     if (token.type === "Preprocesser") {
-      let data = PREPROCESSORZ[token.name](token.target, token.operation);
-      if (data) {
+      const preprocessor = PREPROCESSORZ[token.name]
+      let data = preprocessor(token.target, token.operation, );
+      if (typeof data === "function") {
+          preprocessor_modifiers.push(data)
+          index += 1;
+
+          continue
+      }
+      if (data && !data.ast) {
         AST.push(...parse(data));
+      } else {
+        AST.push(data)
       }
       index += 1;
       continue;
     }
-
+    
     
 
     // Parsing Numbers. In the end, this condition evaluates if the token is a FloatLiteral or an IntegerLiteral
@@ -83,6 +98,7 @@ function parse(tokens_array) {
       }
       continue;
     }
+    index += 1
   }
   return AST;
 }

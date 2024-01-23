@@ -3,7 +3,7 @@
 
 declare loop {
     inputln(">>> ") as USER_INPUT
-    fix(USER_INPUT) as USER_INPUT
+
 	if(is_equal(USER_INPUT "clear")) as condition
 	|condition then| as then
 

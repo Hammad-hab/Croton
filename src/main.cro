@@ -1,0 +1,8 @@
+<remtoken ",">
+sum = add(1,2,3,4)
+println("The sum of my secret four numbers is: ", sum)
+println("I'll bet you $100 that you can't guess them")
+
+if [eq(add(1 2 3 4) 13)] {
+
+}

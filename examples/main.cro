@@ -1,0 +1,14 @@
+#excludeExecutionTime
+<include "fmt">
+println(cl_red 'Hi THIS Is green!' fmt_reset)
+println(cl_blue 'What? Blue?' fmt_reset)
+println(cl_green 'NO WAY! green?!' fmt_reset)
+println(cl_yellow 'Yellow!!' fmt_reset)
+println(bg_White cl_red 'Red with White BG!!' fmt_reset)
+
+
+println(cl_red fmt_bold fmt_underline 'Hi THIS Is green!' fmt_reset)
+println(cl_blue fmt_bold fmt_underline fmt_strikethrough 'What? Blue?' fmt_reset)
+println(cl_green fmt_bold fmt_underline fmt_inverse 'NO WAY! green?!' fmt_reset)
+println(cl_yellow fmt_bold fmt_underline fmt_dim 'Yellow!!' fmt_reset)
+println(bg_White cl_red 'Red with White BG!!' fmt_reset)

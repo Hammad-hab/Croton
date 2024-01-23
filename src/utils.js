@@ -101,16 +101,17 @@ function removeCommonEscapeSequences(inputString) {
   return inputString;
 }
 
-
+let toCString = () => {}
+let FromCString = () => {}
 if (ffi){
-  function toCString(string) {
+  toCString = function toCString(string) {
     if (string["value"]) string = string.value
     const Arr = arrayToUint8Array(stringToAsciiArray(string))
     return ffi.ptr(Arr) 
   }
 
 
-  function FromCString(ptr) {
+  FromCString = function FromCString(ptr) {
     const ascii = ffi.toArrayBuffer(ptr);
     // Ensure that the `toArrayBuffer` function returns a valid ArrayBuffer
 

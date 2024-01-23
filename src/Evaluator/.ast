@@ -1,0 +1,54 @@
+[
+  {
+    "type": "FunctionDeclaration",
+    "contents": [
+      {
+        "type": "VariableDeclaration",
+        "name": "hello",
+        "assignee": {
+          "type": "IntegerLiteral",
+          "baseType": "Numeric",
+          "value": 10,
+          "positionedAt": 28
+        },
+        "length": 3
+      },
+      {
+        "type": "Function",
+        "name": "println",
+        "arguments": [
+          {
+            "type": "String",
+            "value": "Hello World",
+            "positionedAt": 54,
+            "isArgument": true
+          }
+        ],
+        "parametersLength": 1,
+        "length": 4
+      }
+    ],
+    "length": 11,
+    "name": "function",
+    "lambda": false,
+    "fn_type": "fn"
+  },
+  {
+    "type": "Statement",
+    "name": "if",
+    "executioners": [
+      {
+        "type": "Name",
+        "value": "hi]",
+        "position": 69
+      },
+      {
+        "type": "Symbol",
+        "value": "{",
+        "position": 70
+      }
+    ],
+    "contents": [],
+    "length": 6
+  }
+]

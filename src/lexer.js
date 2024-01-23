@@ -29,6 +29,7 @@ function tokenize(string = "") {
       }
       continue;
     }
+
     if (character === "<") {
       let character = string[(cursor += 1)];
       let content = "";
@@ -51,10 +52,12 @@ function tokenize(string = "") {
       tk.push(obj)
       continue;
     }
+
+    
+
     if (character.match(/[0-9]|[0-9.0-9]|[\-0-9.0-9]/)) {
       let character = string[cursor];
       let content = "";
-
       while (
         character &&
         character.trim() &&
@@ -92,7 +95,16 @@ function tokenize(string = "") {
       character === "}" ||
       character === ">" ||
       character === "<" ||
-      character === "~" || character in ["*", "+", "/", "-"]
+      character === "~" || 
+      character in ["*", "+", "/", "-", "%"] ||
+      character === ";" ||
+      character === "|" || 
+      character === "@" ||
+      character === "!" ||
+      character === "&" || 
+      character === "[" ||
+      character === "]"
+      
     ) {
       tk.push({
         type: "Symbol",

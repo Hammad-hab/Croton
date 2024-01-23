@@ -9,7 +9,6 @@ println(concat(concat("Croton v0.1 [" date_now()) "]"))
 println("Release v1.0, uses Croton v0.1 as the language for the REPL")
 
 fn Loop {
-	ignore(fn {
 		inputln("croton% ") as name
 		if (NOT(name) fn {
 		   "5" as name
@@ -26,7 +25,6 @@ fn Loop {
     help: prints this prompt           
     exit: exits the session
 Apart from that you can freely execute Croton functions, statements etc here.")
-		Loop()
 
 		})
 
@@ -40,9 +38,8 @@ Apart from that you can freely execute Croton functions, statements etc here.")
 			else(fn {
 				println(retn)
 			})
-			Loop()
+			
 		})
-	})
 
 }
 
