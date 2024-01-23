@@ -49,9 +49,12 @@ struct CrotonByteParser:
     
     fn executeOptcodes(inout self, index: Int) raises:
         let codes: DynamicVector[String] = self.exeutionOptwise[index].split("\n")
+        let name: String;
+        let args: DynamicVector[String];
         for indx in range(codes.__len__()):
             var code: DynamicVector[String] = codes[indx].split(":")
             code[0] = code[0].strip()
             code[1] = code[1].strip()
-            print(code[0])
+            if code[0] == "CALL_FN": name = code[1]
+            if code[0] == "LOAD_ARG": args.append(code[1])
             ...
