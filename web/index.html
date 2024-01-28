@@ -107,6 +107,12 @@
 
     <script type="module" src="index.js"></script>  
     <script>
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        if (isMobileDevice()) {
+            document.body.innerHTML = "<h3 style='color:red;'>[HammadWebEngine]: Cannot View Website on mobile</h3>"
+        } 
         const myTextArea = document.querySelector("textarea")
         var myCodeMirror = CodeMirror(function(elt) {
             myTextArea.parentNode.replaceChild(elt, myTextArea);
