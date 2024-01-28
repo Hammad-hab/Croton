@@ -7,7 +7,9 @@
     "crotoninit": "./crotoninit/crotoninit"
   },
   "pkg": {
-    "targets": ["win"]
+    "targets": [
+      "win"
+    ]
   },
   "dependencies": {
     "@babel/parser": "^7.22.5",
@@ -23,6 +25,7 @@
     "sbffi": "^1.0.4",
     "supports-color": "^9.4.0",
     "toml": "^3.0.0",
+    "uuid": "^9.0.1",
     "yargs": "^17.7.2"
   }
 }

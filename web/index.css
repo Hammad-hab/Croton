@@ -149,3 +149,33 @@ button {
 *::selection {
     background-color: rgba(120, 209, 251, 0.362);
 }
+
+small {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+
+.infopara {
+    position: fixed;
+    top: -5px;
+    height: fit-content;
+    z-index: 200;
+    display: block;
+    color: white;
+    font-size: medium;
+    font-weight: bolder;
+    margin-left: -40px;
+    transform: rotate(-30deg) !important;
+    margin-top: 45px;
+    background-color: rgba(0, 0, 0, 0.379);
+    padding: 100px;
+    padding-top: 10;
+    padding-bottom: 10;
+    backdrop-filter: blur(5px);
+    box-shadow: 10px 10px 100px rgba(0, 0, 0, 0.379);
+  }
+
+a{
+    color: pink;
+}

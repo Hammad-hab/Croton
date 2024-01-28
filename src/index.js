@@ -22,7 +22,7 @@ const AstGen = (contents) => {
 		AST_FN.push(item)
 	}
 	const bytecode = Bytecode([...AST_FN_HOIST, ...AST_FN])
-	return bytecode.slice(0, bytecode.length - 2)
+	return bytecode
 }
 
 

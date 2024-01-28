@@ -1,3 +1,4 @@
+const uuid = require("uuid")
 const map = {
     "CALL_FN": 0,
     "LOAD_ARG": 1,
@@ -11,31 +12,56 @@ const registerbt = (bytecode, v, str=true) => {
 
 const Bytecode = (ast) => {
     let generatedCode = ''
+    let LoadedFunction = ''
     for (const item of ast) {
         let gencode = ""
         if (item.type === "Function") {
-            gencode += registerbt("CALL_FN", item.name)
             item.arguments.forEach(argument => {
                 if (argument.type === "Function") {
+                    // const id = uuid.v4()
+
                     const x = Bytecode([argument])
-                    gencode += x
-                    gencode += registerbt("LD_RET", "^")
+                    generatedCode += "\n" + x
+                    gencode += registerbt("MV_ARG_HEAP", "")
+                    gencode += registerbt("CLEAR_RET_HEAP", "")
+                    // gencode += registerbt("LOAD_RET", argument.name)
                 }
-                else if (argument.type !== "Identifier") gencode += registerbt("LOAD_ARG", argument.baseType ? argument.value : `"${argument.value}"`)
-                else gencode += registerbt("LOAD_IDENTIFIER_ARG", argument.name)
+                if (argument.type !== "Identifier" && argument.value) gencode += registerbt("LOAD_ARG", argument.baseType ? argument.value : `${argument.value}`)
+                else if (argument.type === "Identifier") gencode += registerbt("LOAD_IDENTIFIER_ARG",`${argument.name}`)
             });
+            if (item.name !== LoadedFunction) {
+                gencode += registerbt("LOAD_FN", item.name)
+                LoadedFunction = item.name
+            }
+            gencode += registerbt("CALL_FN", "")
+            gencode += registerbt("CLEAR_ARG_HEAP", "")
+            gencode += registerbt("MV_ARG_HEAP", "")
+            gencode += registerbt("CLEAR_RET_HEAP", "")
+            
         }
 
         if (item.type === 'VariableDeclaration') {
-           gencode += registerbt("CALL_FN", "define")
-           gencode += registerbt("LOAD_ARG", `"${item.name}"`)
-           if (item.assignee.type === "Function") {
-              const x = Bytecode([item.assignee])
-              gencode += x
-              gencode += registerbt("LD_RET", "^")
-           }
+            if (item.assignee.type === "Function") {
+               const x = Bytecode([item.assignee])
+               gencode += x
+               gencode += registerbt("LOAD_FN", "define")
+               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
+               gencode += registerbt("CALL_FN", "")
+            } else if (item.assignee.type === "Identifier") {
+               gencode += registerbt("LOAD_FN", "define")
+               gencode += registerbt("LOAD_IDENTIFIER_ARG", `${item.assignee.name}`)
+               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
+               gencode += registerbt("CALL_FN", "")
+            } else {
+               gencode += registerbt("LOAD_FN", "define")
+               gencode += registerbt("LOAD_ARG", `${item.assignee.value}`)
+               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
+               gencode += registerbt("CALL_FN", "")
+            }
+            gencode += registerbt("CLEAR_ARG_HEAP", "")
+            gencode += registerbt("CLEAR_RET_HEAP", "")
         }
-        generatedCode += `${gencode}${ast.length <= 1? "" : "\n"}` 
+        generatedCode += gencode
     }
     return generatedCode
 }
