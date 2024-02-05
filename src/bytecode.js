@@ -7,61 +7,39 @@ const map = {
 }
 
 const registerbt = (bytecode, v, str=true) => {
-      return `${str ? bytecode : map[bytecode]} : ${v}\n`
+      return `${str ? bytecode : map[bytecode]}:${v}\n`
 }
 
-const Bytecode = (ast) => {
+const Bytecode = (ast, isNested=false, index=0) => {
     let generatedCode = ''
     let LoadedFunction = ''
     for (const item of ast) {
         let gencode = ""
         if (item.type === "Function") {
-            item.arguments.forEach(argument => {
+           if (item.arguments.length > 0) 
+            item.arguments.forEach((argument, index) => {
                 if (argument.type === "Function") {
-                    // const id = uuid.v4()
-
-                    const x = Bytecode([argument])
-                    generatedCode += "\n" + x
-                    gencode += registerbt("MV_ARG_HEAP", "")
-                    gencode += registerbt("CLEAR_RET_HEAP", "")
-                    // gencode += registerbt("LOAD_RET", argument.name)
+                    const xgencode = Bytecode([argument], true, index)
+                    generatedCode += xgencode
                 }
-                if (argument.type !== "Identifier" && argument.value) gencode += registerbt("LOAD_ARG", argument.baseType ? argument.value : `${argument.value}`)
-                else if (argument.type === "Identifier") gencode += registerbt("LOAD_IDENTIFIER_ARG",`${argument.name}`)
-            });
-            if (item.name !== LoadedFunction) {
-                gencode += registerbt("LOAD_FN", item.name)
-                LoadedFunction = item.name
-            }
-            gencode += registerbt("CALL_FN", "")
-            gencode += registerbt("CLEAR_ARG_HEAP", "")
-            gencode += registerbt("MV_ARG_HEAP", "")
-            gencode += registerbt("CLEAR_RET_HEAP", "")
-            
+                if (argument.type === "Identifier") gencode += registerbt("LOAD_IDENTIFIER_ARG", `${argument.name},${index}`)
+                else if (argument.baseType) gencode += registerbt("LOAD_ARG", `${argument.value},${index}`)
+                else if (argument.type === "String") gencode += registerbt("LOAD_ARG", `"${argument.value}",${index}`)
+                else if (argument.type === "ExcludedString") gencode += registerbt("LOAD_ARG", `${argument.value},${index}`)
+            })
+           gencode += registerbt("LOAD_FN", item.name)
+           gencode += registerbt("CALL_FN", "")
+           gencode += registerbt("CLEAR_ARG_HEAP", "")
+           if (isNested) 
+            gencode += registerbt("MV_ARGS_POS", `0,${index}`)
+           gencode += registerbt("CLEAR_RET_HEAP", "")
         }
 
         if (item.type === 'VariableDeclaration') {
-            if (item.assignee.type === "Function") {
-               const x = Bytecode([item.assignee])
-               gencode += x
-               gencode += registerbt("LOAD_FN", "define")
-               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
-               gencode += registerbt("CALL_FN", "")
-            } else if (item.assignee.type === "Identifier") {
-               gencode += registerbt("LOAD_FN", "define")
-               gencode += registerbt("LOAD_IDENTIFIER_ARG", `${item.assignee.name}`)
-               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
-               gencode += registerbt("CALL_FN", "")
-            } else {
-               gencode += registerbt("LOAD_FN", "define")
-               gencode += registerbt("LOAD_ARG", `${item.assignee.value}`)
-               gencode += registerbt("LOAD_ARG", `"${item.name}"`)
-               gencode += registerbt("CALL_FN", "")
-            }
-            gencode += registerbt("CLEAR_ARG_HEAP", "")
-            gencode += registerbt("CLEAR_RET_HEAP", "")
+           gencode += Bytecode([{type: "Function", name: "define", arguments: [{type: "String", value: item.name}, item.assignee]}])
+        //    console.log(item)
         }
-        generatedCode += gencode
+        generatedCode +=  gencode
     }
     return generatedCode
 }

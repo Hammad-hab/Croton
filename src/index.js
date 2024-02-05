@@ -49,7 +49,7 @@ const Transpile = (file_name, write=true) => {
 	if (contents){
 		const t0 = performance.now()
 		const asts = AstGen(contents)
-		const name = file_name.split(".")[0] + ".ast"
+		const name = file_name.split(".")[0] + ".crocb"
 		if (write) {
 			fs.writeFileSync(name, asts)
 			
