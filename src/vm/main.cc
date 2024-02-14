@@ -1,6 +1,7 @@
 #include "bytecode.cc"
 #include<any>
 #include<vector>
+#include<dlfcn.h>
 
 using namespace std;
 
@@ -13,5 +14,6 @@ int main(int argc, char* argv[]) {
     string file_name = argv[1];
     initStandardLibrary();
     executeCrotonFile(file_name);
+    
     return 0;
 }

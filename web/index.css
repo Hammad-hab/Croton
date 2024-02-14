@@ -62,3 +62,8 @@ div.container > * > p
 pre, code {
     font-family: 'IBM Plex Mono', monospace;
 }
+
+.CodeMirror {
+    padding-top: 20px;
+    border-radius: 15px;
+}

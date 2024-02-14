@@ -28,28 +28,28 @@ module.exports = function StatementParse(
           value: "",
         };
         let bracketController = 1;
+        let length_x = 0
         const remainingArray = tokens_array.slice(
           copiedGenerics,
           tokens_array.length
         );
-        while (length < remainingArray.length) {
-          character = remainingArray[length];
+        while (length_x < remainingArray.length) {
+          character = remainingArray[length_x];
           if (bracketController === 0) break;
           if (character.value === "{") bracketController += 1;
           if (character.value === "}") bracketController -= 1;
           contents.push(character);
-          length += 1;
+          length_x += 1;
         }
-        // console.log(tokens_array[lengthx])
-        // contents = contents.slice(0, contents.length - 1);
+        length += length_x 
+        contents = contents.slice(0, contents.length - 1);
         contents = parse(contents);
-
         return {
           type: "Statement",
           name: token.value,
-          executioners: executioners,
+          executioners: parse(executioners.slice(0, executioners.length-1)),
           contents: contents,
-          length: length + 1,
+          length: length - 1,
         }
       }
     }

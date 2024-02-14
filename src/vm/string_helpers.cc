@@ -1,3 +1,5 @@
+#ifndef STRING_HELPERS_H
+#define STRING_HELPERS_H 1
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -64,6 +66,13 @@ bool contains(string target, string to_find) {
     return false;
 }
 
+
+int indexOf(string target, string to_find) {
+    return target.find(to_find);
+}
+
+
+
 std::string removePrefixAndSuffix(const std::string& input, const std::string& prefix, const std::string& suffix) {
     std::string result = input;
 
@@ -80,3 +89,4 @@ std::string removePrefixAndSuffix(const std::string& input, const std::string& p
 
     return result;
 }
+#endif

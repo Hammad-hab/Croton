@@ -4,104 +4,13 @@
 #include <format>
 #include "datatypes.cc"
 #include "string_helpers.cc"
+#include "stdlib.cc"
+#include "array_helpers.cc"
+
 using namespace std;
 
-map<string, CrotonBaseObject*> var_heap;
-CrotonBaseObject* arg_heap[100];
-CrotonObjectVector ret_heap;
-FunctionMap std_fn_lib;
-CrotonFunctionReference function_space;
-
-CrotonBaseObject* get(string caller, int index) 
-{
-    if (arg_heap[index] != nullptr && arg_heap[index] != NULL) {
-        return arg_heap[index];
-    } else {
-        raiseCrotonError("Insufficient arguments for function " + caller + ". Error was raised when trying to access argument at stack-index " + to_string(index));
-        return NULL;
-    };
-}
-
-void println() {
-    CrotonBaseObject* n0 = get("println", 0);
-    if (n0 != nullptr) {
-        if (!n0->getType().empty()) {
-            cout << n0->cr__repr() << endl;
-        } else {
-            raiseCrotonError("Function println recived a null/empty pointer");
-        }
-    }
-};
 
 
-void add() {
-    CrotonBaseObject* n0 = get("add", 0);
-    CrotonBaseObject* n1 = get("add", 1);
-    CrotonNumber* numadded = new CrotonNumber(n0->getValueF() + n1->getValueF());
-    ret_heap.push_back(numadded);
-}
-
-void subtract() {
-    CrotonBaseObject* n0 = get("subtract", 0);
-    CrotonBaseObject* n1 = get("subtract", 1);
-    CrotonNumber* numadded = new CrotonNumber(n0->getValueF() - n1->getValueF());
-    ret_heap.push_back(numadded);
-}
-
-void multiply() {
-    CrotonBaseObject* n0 = get("mul", 0);
-    CrotonBaseObject* n1 = get("mul", 1);
-    CrotonNumber* numadded = new CrotonNumber(n0->getValueF() * n1->getValueF());
-    ret_heap.push_back(numadded);
-}
-
-void divide() {
-    CrotonBaseObject* n0 = get("div", 0);
-    CrotonBaseObject* n1 = get("div", 1);
-    CrotonNumber* numadded = new CrotonNumber(n0->getValueF() / n1->getValueF());
-    ret_heap.push_back(numadded);
-}
-
-void concat() {
-    CrotonBaseObject* n0 = get("concat", 0);
-    CrotonBaseObject* n1 = get("concat", 1);
-    CrotonString* concated = new CrotonString(n0->getValueS() + n1->getValueS());
-    delete n0;
-    delete n1;
-    ret_heap.push_back(concated);
-}
-
-void powr() {
-    CrotonBaseObject* n0 = get("pow", 0);
-    CrotonBaseObject* n1 = get("pow", 1);
-    CrotonNumber* numpow = new CrotonNumber(pow(n0->getValueF(), n1->getValueF()));
-    ret_heap.push_back(numpow);
-}
-
-void sqrtr() {
-    CrotonBaseObject* n0 = get("sqrt", 0);
-    CrotonNumber* numsqrt = new CrotonNumber(sqrt(n0->getValueF()));
-    ret_heap.push_back(numsqrt);
-}
-
-void nthroot() {
-    CrotonBaseObject* n0 = get("nthroot", 0);
-    CrotonBaseObject* n1 = get("nthroot", 1);
-    CrotonNumber* numsqrt = new CrotonNumber(pow(n0->getValueF(), 1.0/n1->getValueF()));
-    ret_heap.push_back(numsqrt);
-}
-
-void define() {
-    CrotonBaseObject* name = get("define_var", 0);
-    CrotonBaseObject* value = get("define_var", 1);
-
-    if (name != nullptr && value != nullptr && name != NULL && value != NULL) {
-        string key = name->getValueS();
-        var_heap[key] = value;
-    } else {
-        raiseCrotonError("Failed to define variable. Name is nullptr.");
-    }
-}
 
 void initStandardLibrary() {
     std_fn_lib["println"] = println;
@@ -110,10 +19,17 @@ void initStandardLibrary() {
     std_fn_lib["div"] = divide;
     std_fn_lib["div"] = divide;
     std_fn_lib["define"] = define;
-    std_fn_lib["concat"] = concat;
     std_fn_lib["sqrt"] = sqrtr;
     std_fn_lib["nthroot"] = nthroot;
     std_fn_lib["pow"] = powr;
+    std_fn_lib["typeof"] = typef;
+    std_fn_lib["concat"] = concat;
+    std_fn_lib["deleteObjectUSafe"] = deleteObjectUSafe;
+    std_fn_lib["gt"] = gt;
+    std_fn_lib["lt"] = lt;
+    std_fn_lib["gte"] = gte;
+    std_fn_lib["lte"] = lte;
+    std_fn_lib["inputln"] = inputln;
 }
 
 void LOAD_ARG(CrotonString* value, ArgumentPosition position) {
@@ -134,7 +50,7 @@ void LOAD_IDENTIFIER_ARG(string name, ArgumentPosition position) {
 
 void CLEAR_ARG_HEAP() {
     if (arg_heap[0] == nullptr || arg_heap[0] == NULL) {
-        raiseCrotonWarning("Program Bytecode attempted to clear argument stac despite its being empty. VM is overlooking this instruction to prevent redundant clearing");
+        raiseCrotonWarning("Program Bytecode attempted to clear argument stack despite its being empty. VM is overlooking this instruction to prevent redundant clearing");
     } else {
         int i = 0;
         for (auto obj : arg_heap) {
@@ -164,8 +80,11 @@ void MV_ARGS_POS(ArgumentPosition ret_heap_position, ArgumentPosition arg_heap_p
 
 void LOAD_FN(string name) {
     auto it = std_fn_lib.find(name);
-    if (it != std_fn_lib.end()) {
-        function_space = it->second;
+    if (it != std_fn_lib.end() && std_fn_lib[name] != nullptr && std_fn_lib.count(name) > 0) {
+        function_space = std_fn_lib[name];
+        if (function_space == nullptr || function_space == NULL) {
+            raiseCrotonError("Reference to undefined function " + name + " could not be resolved");
+        }
     } else {
         raiseCrotonError("Reference to undefined function " + name + " could not be resolved");
     }
@@ -198,6 +117,7 @@ void executeCrotonBytecode(string optcode_operand) {
         string name = args[0];
         LOAD_IDENTIFIER_ARG(name, stoi(args[1]));
     }
+
 
     if (optcode == "LOAD_FN") LOAD_FN(operand);
     if (optcode == "CALL_FN") CALL_FN();
@@ -232,11 +152,66 @@ string readFile(const std::string& filename) {
     return fileContents;
 }
 
-void executeCrotonFile(string fl_name) {
-    file_name = fl_name;
-    vector<string> contents = split(readFile(fl_name), '\n');
-    for (string bt : contents) {
+void executeCrotonMul(string raw_contents) {
+    vector<string> contents = split(raw_contents, '\n');
+    for (int i = 0; i < contents.size(); i++)
+    {
+        string bt = contents[i];
+        vector<string> bytecode = split(bt, ':');
+        string optcode = bytecode[0];
+        string operand = bytecode[1];
+
         if (bt == "") continue;
+        if (optcode == "IF_GOTO") {
+            vector<string> args = split(operand, ',');
+            int jump_to = stoi(args[0]);
+            CrotonBaseObject* vccheck = arg_heap[0];
+            if (vccheck->cr__isfalsy()) {
+
+               i = jump_to;
+               continue;
+            } else {
+              continue;
+            }
+        }
+
+        if (optcode == "DF_FN") {
+          int index = indexOf(contents, "ED_FN:"+operand);
+        
+          string fn_contents = join_array(slice_vec(contents, i + 1, index), '\n');
+          static CrotonFunction* fn = new CrotonFunction(operand);
+          fn->setSource(fn_contents);
+          var_heap[operand] = fn;
+          std_fn_lib[operand] = []() {fn->cr_call();};
+          i = index ;
+          continue;
+        }
+
+        if (optcode == "GOTO") {
+            vector<string> args = split(operand, ',');
+            int jump_to = stoi(args[0]);
+
+            i = jump_to;
+            continue;
+        }
         executeCrotonBytecode(bt);
     }
 }
+
+void executeCrotonFile(string fl_name) {
+    file_name = fl_name;
+    string raw_contents = readFile(fl_name);
+    executeCrotonMul(raw_contents);
+}
+
+
+void CrotonFunction::cr_call() {
+    int index = 0;
+    for (CrotonBaseObject* arg : arg_heap) {
+        var_heap["Arg"+to_string(index)] = arg;
+        index += 1;
+    }
+
+    executeCrotonMul(rsource);
+}
+

@@ -1,4 +1,4 @@
-const uuid = require("uuid")
+const process = require("process")
 const map = {
     "CALL_FN": 0,
     "LOAD_ARG": 1,
@@ -13,8 +13,13 @@ const registerbt = (bytecode, v, str=true) => {
 const Bytecode = (ast, isNested=false, index=0) => {
     let generatedCode = ''
     let LoadedFunction = ''
+    let ln = 0
     for (const item of ast) {
         let gencode = ""
+        if (item.type === "String" || item.baseType) {
+           console.log(`\u001b[31m[CrotonTranspiler >> Failure]:\n\tExiting Program because of a potential threat. Unused ${item.type} placed in program. This can cause un-tracked memory allocation.`)
+           process.exit(-1)
+        }
         if (item.type === "Function") {
            if (item.arguments.length > 0) 
             item.arguments.forEach((argument, index) => {
@@ -37,9 +42,41 @@ const Bytecode = (ast, isNested=false, index=0) => {
 
         if (item.type === 'VariableDeclaration') {
            gencode += Bytecode([{type: "Function", name: "define", arguments: [{type: "String", value: item.name}, item.assignee]}])
-        //    console.log(item)
+        }
+        if (item.type === "Statement" && item.name === "if") {
+            generatedCode += Bytecode(item.executioners, true)
+            const _generated_asm = generatedCode.split("\n")
+            const contents = Bytecode(item.contents)
+
+           gencode += registerbt("IF_GOTO", ((_generated_asm.length - 1) + (contents.split("\n").length - 1)) + 1)
+           gencode += registerbt("CLEAR_ARG_HEAP", "")
+           gencode += contents
+        }
+
+        if (item.type === "Statement" && item.name === "while") {
+           const ext = Bytecode(item.executioners, true)
+           generatedCode += ext
+           const _generated_asm = generatedCode.split("\n")
+           const contents = Bytecode(item.contents)
+           gencode += registerbt("PRoFT", ((_generated_asm.length - 1) + (contents.split("\n").length - 1)) + 2)
+           gencode += registerbt("CLEAR_ARG_HEAP", "")
+           gencode += contents
+           gencode += registerbt("GOTO", (_generated_asm.length - ext.split("\n").length) - 1)
+        }
+
+        if (item.type === "FunctionDeclaration") {
+            const contents = Bytecode(item.contents)
+            gencode += registerbt("DF_FN", item.name)
+            if (contents.includes(`D_FN:${item.name}`)) {
+                console.log(`\u001b[31m[CrotonTranspiler >> Warning]:\n\tExiting Program because of a potential threat. Nested function in ${item.name} with the same name.\n\tThis can cause slower performance and lengthy lookups.`)
+                // process.exit(-1)
+
+            }
+            gencode += contents
+            gencode += registerbt("ED_FN", item.name)
         }
         generatedCode +=  gencode
+        ln += 1
     }
     return generatedCode
 }

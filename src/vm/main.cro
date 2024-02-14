@@ -1,2 +1,11 @@
-<remtoken ",">
-println(nthroot(8,10))
+i = 0
+fn main {
+    if [lt(i 10)] {
+        println("I is less than ten")
+        println(i)
+        i = add(i 1)
+        main()
+    }
+}
+
+main()

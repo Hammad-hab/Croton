@@ -1,2 +1,4 @@
-hello = add(1 add(10 10))
-println(hello)
+hello = 100
+if [gt(hello)] {
+    println("Hi")
+}

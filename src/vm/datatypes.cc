@@ -1,3 +1,5 @@
+#ifndef DATATYPES_H
+#define DATATYPES_H 1
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -31,7 +33,7 @@ class CrotonBaseObject {
     public:
 
         string type = "CrotonBaseObject";
-        map<string, string> properties_str;
+        map<string, CrotonBaseObject*> properties_str;
         string getType() {
             return type;
         }
@@ -40,7 +42,7 @@ class CrotonBaseObject {
             return "<CrotonBaseObject type[" + type + "]>";
         }
 
-        bool cr__isfalsy() {
+        virtual bool cr__isfalsy() {
             return true;
         }
         
@@ -77,7 +79,7 @@ class CrotonBaseObject {
         };
 
         
-        int length() {
+        virtual int length() {
             raiseCrotonError("CrotonBaseObject does not implement the length method.");
             return 0;
         };     
@@ -94,11 +96,11 @@ class CrotonString: public CrotonBaseObject {
             type = "String";
         }
 
-        int length() {
+        virtual int length() override {
             return getValueS().length();
         }
 
-        bool cr__isfalsy() {
+        virtual bool cr__isfalsy() override {
             return length() > 0 ? false : true;
         };
 
@@ -117,7 +119,7 @@ class CrotonNumber: public CrotonBaseObject{
             type = "Number";
         }
 
-        bool cr__isfalsy() {
+        virtual bool cr__isfalsy() override {
             return getValueF() > 0 ? false : true;
         };
 
@@ -136,12 +138,46 @@ class CrotonBoolean: public CrotonBaseObject{
             type = "Boolean";
         }
 
-        bool cr__isfalsy() {
-            return getValueB();
+        virtual bool cr__isfalsy() override {
+            return !getValueB();
         };
 
         string cr__repr() override{
             return to_string(getValueB());
+        }
+};
+
+
+class CrotonFunction: public CrotonBaseObject {
+    private:
+        string name;
+        vector<string> source;
+        string rsource;
+    public:
+        CrotonFunction(string fn_name) {
+            name = fn_name;
+        }
+
+        string getName() {
+            return name;
+        }
+
+        void setSource(vector<string> src) {
+            source = src;
+        }
+
+        void setSource(string src) {
+            rsource = src;
+        }
+
+        void cr_call();
+
+        virtual bool cr__isfalsy() override {
+            return false;
+        };
+
+        string cr__repr() override{
+            return "<CrotonFunction["+ name +"]>";
         }
 };
 
@@ -152,3 +188,4 @@ typedef int ArgumentPosition;
 typedef function<void(void)> CrotonFunctionReference;
 typedef map<string, CrotonFunctionReference> FunctionMap;
 typedef map<string, CrotonBaseObject*> CrotonObjectContainer;
+#endif
